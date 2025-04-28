@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { Home, FileText, ShoppingCart, CreditCard, Package, Gavel, BarChart3, TrendingUp, Shield, Settings, MoreHorizontal } from 'lucide-react';
+import { Home, FileText, ShoppingCart, CreditCard, Package, Gavel, BarChart3, TrendingUp, Shield, Settings, MoreHorizontal, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VoiceElement } from './VoiceElement';
 
@@ -64,6 +64,11 @@ export const TopNavigation: React.FC = () => {
       path: '/spend-guard', 
       name: 'Spend Guard', 
       icon: <Shield className="h-4 w-4" /> 
+    },
+    { 
+      path: '/supply-chain', 
+      name: 'Supply Chain', 
+      icon: <Package className="h-4 w-4" /> 
     },
     { 
       path: '/setup', 
