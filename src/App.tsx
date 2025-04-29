@@ -9,6 +9,7 @@ import PurchaseOrders from "./pages/PurchaseOrders";
 import Auctions from "./pages/Auctions";
 import SupplyChain from "./pages/SupplyChain";
 import Analytics from "./pages/Analytics";
+import Invoices from "./pages/Invoices";
 import NotFound from "./pages/NotFound";
 import { TopBar } from "./components/TopBar";
 import { TopNavigation } from "./components/TopNavigation";
@@ -53,6 +54,14 @@ const getSecondaryNavItems = (path: string) => {
         { name: "Reports", path: "/analytics/reports" },
         { name: "Data Explorer", path: "/analytics/explorer" },
         { name: "Settings", path: "/analytics/settings" }
+      ];
+    case "/invoices":
+      return [
+        { name: "All Invoices", path: "/invoices" },
+        { name: "Pending Approval", path: "/invoices/pending" },
+        { name: "Processing", path: "/invoices/processing" },
+        { name: "Paid", path: "/invoices/paid" },
+        { name: "Disputes", path: "/invoices/disputes" }
       ];
     case "/":
       return [
@@ -99,6 +108,7 @@ const App = () => (
               <Route path="/sourcing" element={<Auctions />} />
               <Route path="/supply-chain" element={<SupplyChain />} />
               <Route path="/analytics" element={<Analytics />} />
+              <Route path="/invoices" element={<Invoices />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AppLayout>
