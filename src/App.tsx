@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import { TopBar } from "./components/TopBar";
 import { TopNavigation } from "./components/TopNavigation";
 import { SecondaryNavigation } from "./components/SecondaryNavigation";
+import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 
 const queryClient = new QueryClient();
 
@@ -65,12 +66,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navItems = getSecondaryNavItems(basePath);
 
   return (
-    <>
+    <VoiceTutorialProvider>
       <TopBar />
       <TopNavigation />
       <SecondaryNavigation items={navItems} />
       {children}
-    </>
+    </VoiceTutorialProvider>
   );
 };
 

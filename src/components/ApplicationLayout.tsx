@@ -3,7 +3,6 @@ import React from 'react';
 import { TopBar } from './TopBar';
 import { TopNavigation } from './TopNavigation';
 import { VoiceTutorialControls } from './VoiceTutorialControls';
-import { VoiceTutorialProvider } from '../contexts/VoiceTutorialContext';
 import { VoiceElement } from './VoiceElement';
 
 interface ApplicationLayoutProps {
@@ -18,7 +17,7 @@ export const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({
   pageLoadScript
 }) => {
   return (
-    <VoiceTutorialProvider>
+    <>
       <div className="min-h-screen flex flex-col bg-gray-50">
         <main className="flex-1 overflow-auto">
           <VoiceElement 
@@ -34,6 +33,6 @@ export const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({
         
         <VoiceTutorialControls />
       </div>
-    </VoiceTutorialProvider>
+    </>
   );
 };
