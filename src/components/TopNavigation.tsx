@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { Home, FileText, ShoppingCart, CreditCard, Package, Gavel, BarChart3, TrendingUp, Shield, Settings, MoreHorizontal, Users } from 'lucide-react';
+import { Home, FileText, ShoppingCart, CreditCard, Package, Globe, Shield, Settings, MoreHorizontal, Users, Briefcase, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VoiceElement } from './VoiceElement';
 
@@ -18,7 +18,7 @@ export const TopNavigation: React.FC = () => {
     { 
       path: '/travel-expenses', 
       name: 'Travel & Expenses', 
-      icon: <BarChart3 className="h-4 w-4" /> 
+      icon: <Briefcase className="h-4 w-4" /> 
     },
     { 
       path: '/forecasts', 
@@ -31,7 +31,7 @@ export const TopNavigation: React.FC = () => {
       icon: <FileText className="h-4 w-4" /> 
     },
     { 
-      path: '/purchase-orders', 
+      path: '/orders', 
       name: 'Orders', 
       icon: <ShoppingCart className="h-4 w-4" /> 
     },
@@ -56,9 +56,9 @@ export const TopNavigation: React.FC = () => {
       icon: <Package className="h-4 w-4" /> 
     },
     { 
-      path: '/auctions', 
+      path: '/sourcing', 
       name: 'Sourcing', 
-      icon: <Gavel className="h-4 w-4" /> 
+      icon: <Globe className="h-4 w-4" /> 
     },
     { 
       path: '/spend-guard', 
@@ -85,7 +85,7 @@ export const TopNavigation: React.FC = () => {
 
   return (
     <nav className="border-b border-gray-200 bg-white">
-      <div className="flex items-center px-2 py-1">
+      <div className="flex items-center px-2 py-1 overflow-x-auto">
         {mainNavItems.map((item) => (
           <VoiceElement
             key={item.path}
@@ -97,7 +97,7 @@ export const TopNavigation: React.FC = () => {
               <Button
                 variant="ghost"
                 className={cn(
-                  "h-9 text-sm gap-1",
+                  "h-9 text-sm gap-1 whitespace-nowrap",
                   location.pathname === item.path && "bg-gray-100 text-coupa-blue font-medium",
                   item.className
                 )}

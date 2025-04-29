@@ -1,34 +1,37 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
 import { TotalMetricCard } from '../components/supply-chain/TotalMetricCard';
 import { ProductFlowChart } from '../components/supply-chain/ProductFlowChart';
 import { FlowUnitsCostScatter } from '../components/supply-chain/FlowUnitsCostScatter';
 import { CustomerFlowBarChart } from '../components/supply-chain/CustomerFlowBarChart';
 import { CustomerFlowDetailsTable } from '../components/supply-chain/CustomerFlowDetailsTable';
-import { AnalyticsNavigation } from '../components/AnalyticsNavigation';
 import { supplyChainData, voiceScripts } from '../data/supplyChainData';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, RefreshCw, FileDown, HelpCircle, Info } from 'lucide-react';
+import { RefreshCw, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { VoiceElement } from '../components/VoiceElement';
+import { SupplyChainNavigation } from '../components/SupplyChainNavigation';
 
 const SupplyChain = () => {
-  const [currentTab, setCurrentTab] = React.useState('data-visualizations');
+  const [currentTab, setCurrentTab] = useState('data-visualizations');
 
   return (
-    <ApplicationLayout
-      pageLoadScript={voiceScripts.supplyChain.pageLoad}
-    >
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Supply Chain</h1>
-        
-        <AnalyticsNavigation 
-          currentTab={currentTab}
-          onTabChange={setCurrentTab}
-        />
-
-        <div className="p-6">
+    <>
+      <div className="bg-blue-500 text-white py-2 px-4 flex items-center">
+        <div className="bg-coupa-blue rounded-md w-8 h-8 flex items-center justify-center mr-2">
+          <span className="text-white font-bold">C</span>
+        </div>
+        <span className="text-xl font-medium">Supply Chain</span>
+      </div>
+      
+      <SupplyChainNavigation 
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+      />
+      
+      <ApplicationLayout>
+        <div>
           <div className="mb-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Workbooks › </span>
@@ -100,9 +103,8 @@ const SupplyChain = () => {
                     <img 
                       src="/lovable-uploads/84a0a1cd-6e19-45e5-bf62-4cb6629f538f.png" 
                       alt="Customer Flow Map"
-                      className="max-h-60 object-contain mx-auto opacity-50" 
+                      className="max-h-60 object-contain mx-auto opacity-75" 
                     />
-                    <p className="mt-2 text-xs">Map visualization requires additional geographic data</p>
                   </div>
                 </div>
               </Card>
@@ -131,8 +133,8 @@ const SupplyChain = () => {
             decisionScript={voiceScripts.supplyChain.flowDetails.decision}
           />
         </div>
-      </div>
-    </ApplicationLayout>
+      </ApplicationLayout>
+    </>
   );
 };
 

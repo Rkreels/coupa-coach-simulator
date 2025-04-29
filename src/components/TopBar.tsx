@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, HelpCircle, Search } from 'lucide-react';
+import { Search, Bell, HelpCircle, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VoiceElement } from './VoiceElement';
 
@@ -8,18 +8,17 @@ export const TopBar: React.FC = () => {
   return (
     <header className="h-14 border-b border-gray-200 bg-white flex items-center justify-between px-4 shadow-sm z-10">
       <div className="flex items-center">
-        <a href="/" className="flex items-center space-x-2">
+        <a href="/" className="flex items-center">
           <div className="bg-coupa-blue rounded-md w-8 h-8 flex items-center justify-center">
             <span className="text-white font-bold">C</span>
           </div>
-          <span className="text-coupa-blue font-bold text-xl">coupa</span>
+          <span className="text-coupa-blue font-bold text-xl ml-1">coupa</span>
         </a>
         
         <div className="ml-6 relative flex-grow w-80">
           <VoiceElement
             whatScript="This is the global search bar. You can search for anything across the platform."
             howScript="Type keywords and press Enter to search across all modules."
-            decisionScript="Use specific search terms for better results."
           >
             <div className="relative">
               <input
@@ -35,27 +34,27 @@ export const TopBar: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-3">
+        <VoiceElement
+          whatScript="This button shows your profile information."
+          howScript="Click to access your profile settings and account options."
+        >
+          <div className="relative">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <User className="h-5 w-5 text-gray-600" />
+            </Button>
+          </div>
+        </VoiceElement>
+        
         <VoiceElement
           whatScript="This notification bell shows your alerts."
           howScript="Click to see pending items and notifications."
         >
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            <span className="absolute top-0 right-0 w-4 h-4 bg-orange-500 rounded-full text-white text-xs flex items-center justify-center">3</span>
           </Button>
         </VoiceElement>
-        
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-600 font-bold">
-            J
-          </div>
-          <div className="relative">
-            <div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-orange-500 rounded-full text-white text-xs">
-              10
-            </div>
-          </div>
-        </div>
         
         <Button variant="ghost" size="icon">
           <HelpCircle className="h-5 w-5 text-gray-600" />

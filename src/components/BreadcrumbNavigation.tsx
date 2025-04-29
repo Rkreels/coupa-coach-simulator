@@ -14,9 +14,9 @@ interface BreadcrumbNavigationProps {
 
 export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({ items }) => {
   return (
-    <div className="flex items-center text-sm mb-4">
-      <Link to="#" className="text-coupa-blue">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <div className="flex items-center text-sm my-2">
+      <Link to="/" className="text-coupa-blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         </svg>
       </Link>
