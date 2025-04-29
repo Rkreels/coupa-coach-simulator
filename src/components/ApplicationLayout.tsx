@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { TopBar } from './TopBar';
-import { TopNavigation } from './TopNavigation';
 import { VoiceTutorialControls } from './VoiceTutorialControls';
 import { VoiceElement } from './VoiceElement';
 
@@ -30,8 +28,6 @@ export const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({
             </div>
           </VoiceElement>
         </main>
-        
-        <VoiceTutorialControls />
       </div>
     </>
   );

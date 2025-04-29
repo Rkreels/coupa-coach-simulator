@@ -14,6 +14,7 @@ import { TopBar } from "./components/TopBar";
 import { TopNavigation } from "./components/TopNavigation";
 import { SecondaryNavigation } from "./components/SecondaryNavigation";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
+import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
 
 const queryClient = new QueryClient();
 
@@ -70,7 +71,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <TopBar />
       <TopNavigation />
       <SecondaryNavigation items={navItems} />
-      {children}
+      <main className="flex-1 overflow-auto">
+        {children}
+      </main>
+      <VoiceTutorialControls />
     </VoiceTutorialProvider>
   );
 };
@@ -81,16 +85,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/orders" element={<PurchaseOrders />} />
-            <Route path="/sourcing" element={<Auctions />} />
-            <Route path="/supply-chain" element={<SupplyChain />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <div className="min-h-screen flex flex-col bg-gray-50">
+          <AppLayout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/orders" element={<PurchaseOrders />} />
+              <Route path="/sourcing" element={<Auctions />} />
+              <Route path="/supply-chain" element={<SupplyChain />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AppLayout>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
