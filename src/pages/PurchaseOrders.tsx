@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MainLayout } from '../components/MainLayout';
+import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,7 +19,7 @@ const PurchaseOrdersPage = () => {
   };
 
   return (
-    <MainLayout 
+    <ApplicationLayout 
       pageTitle="Purchase Orders"
       pageLoadScript={voiceScripts.purchaseOrders.pageLoad}
     >
@@ -256,7 +256,7 @@ const PurchaseOrdersPage = () => {
           <Button variant="outline" size="sm" disabled>Next</Button>
         </div>
       </div>
-    </MainLayout>
+    </ApplicationLayout>
   );
 };
 

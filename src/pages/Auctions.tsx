@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MainLayout } from '../components/MainLayout';
+import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -40,7 +40,7 @@ const AuctionsPage = () => {
   });
 
   return (
-    <MainLayout 
+    <ApplicationLayout 
       pageTitle="Auctions" 
       pageLoadScript={voiceScripts.auctions.pageLoad}
     >
@@ -272,8 +272,7 @@ const AuctionsPage = () => {
           </div>
         </div>
       </div>
-      
-    </MainLayout>
+    </ApplicationLayout>
   );
 };
 

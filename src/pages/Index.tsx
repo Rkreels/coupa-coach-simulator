@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MainLayout } from '../components/MainLayout';
+import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,8 +19,8 @@ const RequisitionsPage = () => {
   };
 
   return (
-    <MainLayout 
-      pageTitle="Requisitions" 
+    <ApplicationLayout 
+      pageTitle="Dashboard" 
       pageLoadScript={voiceScripts.requisitions.pageLoad}
     >
       <div className="flex justify-between items-center mb-6">
@@ -273,7 +273,7 @@ const RequisitionsPage = () => {
           <Button variant="outline" size="sm" disabled>Next</Button>
         </div>
       </div>
-    </MainLayout>
+    </ApplicationLayout>
   );
 };
 

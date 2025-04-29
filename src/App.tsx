@@ -54,6 +54,12 @@ const getSecondaryNavItems = (path: string) => {
         { name: "Data Explorer", path: "/analytics/explorer" },
         { name: "Settings", path: "/analytics/settings" }
       ];
+    case "/":
+      return [
+        { name: "Dashboard", path: "/" },
+        { name: "Recent Activity", path: "/activity" },
+        { name: "Notifications", path: "/notifications" }
+      ];
     default:
       return [];
   }

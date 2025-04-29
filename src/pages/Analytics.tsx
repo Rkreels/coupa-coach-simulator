@@ -5,7 +5,7 @@ import { AnalyticsNavigation } from '../components/AnalyticsNavigation';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, Settings, MoreVertical, RefreshCw } from 'lucide-react';
+import { Settings, MoreVertical, RefreshCw } from 'lucide-react';
 import { VoiceElement } from '../components/VoiceElement';
 
 const Analytics = () => {
@@ -18,10 +18,8 @@ const Analytics = () => {
   ];
 
   return (
-    <ApplicationLayout>
+    <ApplicationLayout pageTitle="Analytics">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Analytics</h1>
-        
         <AnalyticsNavigation 
           currentTab={currentTab} 
           onTabChange={setCurrentTab} 
