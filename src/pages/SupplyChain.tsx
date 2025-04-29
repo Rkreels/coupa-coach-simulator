@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
 import { TotalMetricCard } from '../components/supply-chain/TotalMetricCard';
@@ -11,11 +10,8 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { VoiceElement } from '../components/VoiceElement';
-import { SupplyChainNavigation } from '../components/SupplyChainNavigation';
 
 const SupplyChain = () => {
-  const [currentTab, setCurrentTab] = useState('data-visualizations');
-
   return (
     <>
       <div className="bg-blue-500 text-white py-2 px-4 flex items-center">
@@ -24,11 +20,6 @@ const SupplyChain = () => {
         </div>
         <span className="text-xl font-medium">Supply Chain</span>
       </div>
-      
-      <SupplyChainNavigation 
-        currentTab={currentTab}
-        onTabChange={setCurrentTab}
-      />
       
       <ApplicationLayout>
         <div>

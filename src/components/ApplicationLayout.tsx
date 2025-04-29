@@ -10,22 +10,16 @@ interface ApplicationLayoutProps {
   children: React.ReactNode;
   pageTitle?: string;
   pageLoadScript?: string;
-  secondaryNav?: React.ReactNode;
 }
 
 export const ApplicationLayout: React.FC<ApplicationLayoutProps> = ({ 
   children, 
   pageTitle,
-  pageLoadScript,
-  secondaryNav
+  pageLoadScript
 }) => {
   return (
     <VoiceTutorialProvider>
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <TopBar />
-        <TopNavigation />
-        {secondaryNav}
-        
         <main className="flex-1 overflow-auto">
           <VoiceElement 
             triggerOn="load" 

@@ -4,29 +4,39 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 
 interface SecondaryNavigationProps {
-  items: {
+  items?: {
     name: string;
     path: string;
   }[];
+  backgroundColor?: string;
+  textColor?: string;
+  activeBackgroundColor?: string;
+  activeBorderColor?: string;
 }
 
-export const SecondaryNavigation: React.FC<SecondaryNavigationProps> = ({ items }) => {
+export const SecondaryNavigation: React.FC<SecondaryNavigationProps> = ({ 
+  items = [],
+  backgroundColor = "bg-blue-500",
+  textColor = "text-white",
+  activeBackgroundColor = "bg-blue-600",
+  activeBorderColor = "border-white"
+}) => {
   const location = useLocation();
   
   if (!items || items.length === 0) return null;
   
   return (
-    <div className="bg-white border-b border-gray-200">
+    <div className={`${backgroundColor} ${textColor}`}>
       <div className="flex overflow-x-auto">
         {items.map((item) => (
           <Link 
             key={item.name}
             to={item.path}
             className={cn(
-              "px-4 py-2 text-sm font-medium whitespace-nowrap",
+              "px-4 py-2 text-sm font-medium whitespace-nowrap hover:bg-blue-600",
               location.pathname === item.path 
-                ? "border-b-2 border-coupa-blue text-coupa-blue" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                ? `border-b-2 ${activeBorderColor} ${activeBackgroundColor}` 
+                : ""
             )}
           >
             {item.name}
