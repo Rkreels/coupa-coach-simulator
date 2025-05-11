@@ -16,6 +16,15 @@ import { TopNavigation } from "./components/TopNavigation";
 import { SecondaryNavigation } from "./components/SecondaryNavigation";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
+import Community from "./pages/Community";
+import Payments from "./pages/Payments";
+import Inventory from "./pages/Inventory";
+import SpendGuard from "./pages/SpendGuard";
+import Setup from "./pages/Setup";
+import Requisitions from "./pages/Requisitions";
+import TravelExpenses from "./pages/TravelExpenses";
+import Forecasts from "./pages/Forecasts";
+import Requests from "./pages/Requests";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +78,34 @@ const getSecondaryNavItems = (path: string) => {
         { name: "Recent Activity", path: "/activity" },
         { name: "Notifications", path: "/notifications" }
       ];
+    case "/travel-expenses":
+      return [
+        { name: "Dashboard", path: "/travel-expenses" },
+        { name: "Expenses", path: "/travel-expenses/expenses" },
+        { name: "Reports", path: "/travel-expenses/reports" },
+        { name: "Travel Requests", path: "/travel-expenses/requests" }
+      ];
+    case "/community":
+      return [
+        { name: "Home", path: "/community" },
+        { name: "Forum", path: "/community/forum" },
+        { name: "Knowledge Base", path: "/community/knowledge" },
+        { name: "Support", path: "/community/support" }
+      ];
+    case "/payments":
+      return [
+        { name: "Dashboard", path: "/payments" },
+        { name: "Processing", path: "/payments/processing" },
+        { name: "History", path: "/payments/history" },
+        { name: "Settings", path: "/payments/settings" }
+      ];
+    case "/inventory":
+      return [
+        { name: "Dashboard", path: "/inventory" },
+        { name: "Items", path: "/inventory/items" },
+        { name: "Transactions", path: "/inventory/transactions" },
+        { name: "Settings", path: "/inventory/settings" }
+      ];
     default:
       return [];
   }
@@ -105,10 +142,19 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/orders" element={<PurchaseOrders />} />
+              <Route path="/requisitions" element={<Requisitions />} />
               <Route path="/sourcing" element={<Auctions />} />
-              <Route path="/supply-chain" element={<SupplyChain />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/supply-chain/*" element={<SupplyChain />} />
+              <Route path="/analytics/*" element={<Analytics />} />
+              <Route path="/invoices/*" element={<Invoices />} />
+              <Route path="/community/*" element={<Community />} />
+              <Route path="/payments/*" element={<Payments />} />
+              <Route path="/inventory/*" element={<Inventory />} />
+              <Route path="/spend-guard/*" element={<SpendGuard />} />
+              <Route path="/setup/*" element={<Setup />} />
+              <Route path="/travel-expenses/*" element={<TravelExpenses />} />
+              <Route path="/forecasts/*" element={<Forecasts />} />
+              <Route path="/requests/*" element={<Requests />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AppLayout>
