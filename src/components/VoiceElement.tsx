@@ -23,7 +23,7 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
   hoverDelay = 2000, // default 2 seconds
   forcePlay = false,
 }) => {
-  const { playScript, detailLevel } = useVoiceTutorial();
+  const { playScript, detailLevel, enabled } = useVoiceTutorial();
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const elementRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
   };
 
   const handleMouseEnter = () => {
-    if (triggerOn !== 'hover' || !getAppropriateScript()) return;
+    if (!enabled || triggerOn !== 'hover' || !getAppropriateScript()) return;
     
     setIsHovering(true);
     hoverTimerRef.current = setTimeout(() => {
@@ -61,7 +61,7 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
   };
 
   const handleClick = () => {
-    if (triggerOn !== 'click') return;
+    if (!enabled || triggerOn !== 'click') return;
     
     const script = getAppropriateScript();
     if (script) {
@@ -71,6 +71,8 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
 
   // Handle load trigger
   useEffect(() => {
+    if (!enabled) return;
+    
     if (triggerOn === 'load' && !hasPlayed && getAppropriateScript()) {
       const script = getAppropriateScript();
       if (script) {
@@ -78,22 +80,27 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
         setHasPlayed(true);
       }
     }
-  }, [triggerOn, hasPlayed]);
+  }, [triggerOn, hasPlayed, enabled]);
 
   // Handle force play
   useEffect(() => {
+    if (!enabled) return;
+    
     if (forcePlay && getAppropriateScript()) {
       const script = getAppropriateScript();
       if (script) {
         playScript(script);
       }
     }
-  }, [forcePlay]);
+  }, [forcePlay, enabled]);
+
+  // The outline should only be visible when enabled and hovering
+  const outlineClass = enabled && isHovering ? 'outline outline-1 outline-offset-2 outline-coupa-blue/30' : '';
 
   return (
     <div
       ref={elementRef}
-      className={`${className || ''} ${isHovering ? 'outline outline-1 outline-offset-2 outline-coupa-blue/30' : ''}`}
+      className={`${className || ''} ${outlineClass}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

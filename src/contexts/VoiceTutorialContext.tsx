@@ -11,14 +11,29 @@ type VoiceTutorialContextProps = {
   pauseTutorial: () => void;
   repeatLastScript: () => void;
   setDetailLevel: (level: TutorialDetailLevel) => void;
+  enabled: boolean;
+  setEnabled: (enabled: boolean) => void;
 };
 
-const VoiceTutorialContext = createContext<VoiceTutorialContextProps | undefined>(undefined);
+const defaultContextValue: VoiceTutorialContextProps = {
+  isPlaying: false,
+  currentScript: null,
+  detailLevel: 'beginner',
+  playScript: () => {},
+  pauseTutorial: () => {},
+  repeatLastScript: () => {},
+  setDetailLevel: () => {},
+  enabled: false,
+  setEnabled: () => {},
+};
+
+const VoiceTutorialContext = createContext<VoiceTutorialContextProps>(defaultContextValue);
 
 export const VoiceTutorialProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentScript, setCurrentScript] = useState<string | null>(null);
   const [detailLevel, setDetailLevel] = useState<TutorialDetailLevel>('beginner');
+  const [enabled, setEnabled] = useState(false);
   const lastScript = useRef<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -31,6 +46,8 @@ export const VoiceTutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const playScript = (script: string) => {
+    if (!enabled) return;
+    
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -70,6 +87,8 @@ export const VoiceTutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     pauseTutorial,
     repeatLastScript,
     setDetailLevel,
+    enabled,
+    setEnabled,
   };
 
   return (

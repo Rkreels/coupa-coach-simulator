@@ -25,6 +25,7 @@ import Forecasts from "./pages/Forecasts";
 import Requests from "./pages/Requests";
 import Activity from "./pages/Activity";
 import Notifications from "./pages/Notifications";
+import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 
 const queryClient = new QueryClient();
 
@@ -136,30 +137,32 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-gray-50">
-          <AppLayout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/orders" element={<PurchaseOrders />} />
-              <Route path="/requisitions" element={<Requisitions />} />
-              <Route path="/sourcing" element={<Auctions />} />
-              <Route path="/supply-chain/*" element={<SupplyChain />} />
-              <Route path="/analytics/*" element={<Analytics />} />
-              <Route path="/invoices/*" element={<Invoices />} />
-              <Route path="/community/*" element={<Community />} />
-              <Route path="/payments/*" element={<Payments />} />
-              <Route path="/inventory/*" element={<Inventory />} />
-              <Route path="/spend-guard/*" element={<SpendGuard />} />
-              <Route path="/setup/*" element={<Setup />} />
-              <Route path="/travel-expenses/*" element={<TravelExpenses />} />
-              <Route path="/forecasts/*" element={<Forecasts />} />
-              <Route path="/requests/*" element={<Requests />} />
-              <Route path="/activity" element={<Activity />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AppLayout>
-        </div>
+        <VoiceTutorialProvider>
+          <div className="min-h-screen flex flex-col bg-gray-50">
+            <AppLayout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/orders" element={<PurchaseOrders />} />
+                <Route path="/requisitions" element={<Requisitions />} />
+                <Route path="/sourcing" element={<Auctions />} />
+                <Route path="/supply-chain/*" element={<SupplyChain />} />
+                <Route path="/analytics/*" element={<Analytics />} />
+                <Route path="/invoices/*" element={<Invoices />} />
+                <Route path="/community/*" element={<Community />} />
+                <Route path="/payments/*" element={<Payments />} />
+                <Route path="/inventory/*" element={<Inventory />} />
+                <Route path="/spend-guard/*" element={<SpendGuard />} />
+                <Route path="/setup/*" element={<Setup />} />
+                <Route path="/travel-expenses/*" element={<TravelExpenses />} />
+                <Route path="/forecasts/*" element={<Forecasts />} />
+                <Route path="/requests/*" element={<Requests />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AppLayout>
+          </div>
+        </VoiceTutorialProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

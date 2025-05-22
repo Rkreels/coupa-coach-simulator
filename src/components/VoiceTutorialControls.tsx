@@ -3,7 +3,9 @@ import React from 'react';
 import { useVoiceTutorial } from '../contexts/VoiceTutorialContext';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pause, Play, RefreshCw, Volume2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Pause, Play, RefreshCw, Volume2, X } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 
 export const VoiceTutorialControls: React.FC = () => {
   const { 
@@ -12,14 +14,30 @@ export const VoiceTutorialControls: React.FC = () => {
     repeatLastScript, 
     detailLevel, 
     setDetailLevel,
-    currentScript 
+    currentScript,
+    enabled,
+    setEnabled
   } = useVoiceTutorial();
+
+  // Don't render if not enabled
+  if (!enabled) return null;
 
   return (
     <div className="fixed bottom-4 right-4 p-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-w-sm">
-      <div className="flex items-center gap-2 mb-3">
-        <Volume2 className="text-coupa-blue w-5 h-5" />
-        <h3 className="font-medium text-gray-800">Voice Tutorial Controls</h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Volume2 className="text-coupa-blue w-5 h-5" />
+          <h3 className="font-medium text-gray-800">Voice Tutorial Controls</h3>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0" 
+          onClick={() => setEnabled(false)}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </Button>
       </div>
       
       <div className="flex flex-col gap-3">
