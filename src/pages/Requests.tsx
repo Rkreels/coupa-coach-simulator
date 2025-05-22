@@ -14,13 +14,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from "@/components/ui/textarea";
 
+// Define the status type to ensure consistency
+type RequestStatus = "approved" | "pending" | "rejected";
+
 // Initial mock data for requests
 const initialRequests = [
   {
     id: "REQ-2023-001",
     title: "IT Support for Marketing Event",
     type: "Service Request",
-    status: "approved",
+    status: "approved" as RequestStatus,
     requestedBy: "Sarah Johnson",
     dateCreated: "2023-05-12",
     dateNeeded: "2023-06-01",
@@ -31,7 +34,7 @@ const initialRequests = [
     id: "REQ-2023-002",
     title: "Office Relocation Support",
     type: "Service Request",
-    status: "pending",
+    status: "pending" as RequestStatus,
     requestedBy: "John Smith",
     dateCreated: "2023-05-15",
     dateNeeded: "2023-06-15",
@@ -42,7 +45,7 @@ const initialRequests = [
     id: "REQ-2023-003",
     title: "Software License Request - Adobe Suite",
     type: "Software Request",
-    status: "rejected",
+    status: "rejected" as RequestStatus,
     requestedBy: "Emily Davis",
     dateCreated: "2023-05-10",
     dateNeeded: "2023-05-25",
@@ -53,7 +56,7 @@ const initialRequests = [
     id: "REQ-2023-004",
     title: "Catering for Department Meeting",
     type: "Service Request",
-    status: "approved",
+    status: "approved" as RequestStatus,
     requestedBy: "Michael Chen",
     dateCreated: "2023-05-08",
     dateNeeded: "2023-05-20",
@@ -66,7 +69,7 @@ interface Request {
   id: string;
   title: string;
   type: string;
-  status: 'approved' | 'pending' | 'rejected';
+  status: RequestStatus;
   requestedBy: string;
   dateCreated: string;
   dateNeeded: string;

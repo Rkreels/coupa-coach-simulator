@@ -13,12 +13,15 @@ import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
+// Define the status type to ensure consistency
+type ExpenseStatus = "approved" | "pending" | "rejected";
+
 // Initial mock data for expense reports
 const initialExpenseReports = [
   {
     id: "EXP-2023-001",
     title: "Client Meeting - New York",
-    status: "approved",
+    status: "approved" as ExpenseStatus,
     submittedBy: "David Wilson",
     totalAmount: 1850.75,
     dateSubmitted: "2023-05-08",
@@ -34,7 +37,7 @@ const initialExpenseReports = [
   {
     id: "EXP-2023-002",
     title: "Conference - Chicago",
-    status: "pending",
+    status: "pending" as ExpenseStatus,
     submittedBy: "Sarah Johnson",
     totalAmount: 2450.00,
     dateSubmitted: "2023-05-15",
@@ -50,7 +53,7 @@ const initialExpenseReports = [
   {
     id: "EXP-2023-003",
     title: "Sales Meeting - Boston",
-    status: "rejected",
+    status: "rejected" as ExpenseStatus,
     submittedBy: "Michael Chen",
     totalAmount: 1200.50,
     dateSubmitted: "2023-05-10",
@@ -67,7 +70,7 @@ const initialExpenseReports = [
 interface ExpenseReport {
   id: string;
   title: string;
-  status: "approved" | "pending" | "rejected";
+  status: ExpenseStatus;
   submittedBy: string;
   totalAmount: number;
   dateSubmitted: string;
