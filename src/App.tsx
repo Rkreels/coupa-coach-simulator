@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,8 +14,6 @@ import NotFound from "./pages/NotFound";
 import { TopBar } from "./components/TopBar";
 import TopNavigation from "./components/TopNavigation";
 import { SecondaryNavigation } from "./components/SecondaryNavigation";
-import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
-import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
 import Community from "./pages/Community";
 import Payments from "./pages/Payments";
 import Inventory from "./pages/Inventory";
@@ -24,6 +23,8 @@ import Requisitions from "./pages/Requisitions";
 import TravelExpenses from "./pages/TravelExpenses";
 import Forecasts from "./pages/Forecasts";
 import Requests from "./pages/Requests";
+import Activity from "./pages/Activity";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -118,15 +119,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navItems = getSecondaryNavItems(basePath);
 
   return (
-    <VoiceTutorialProvider>
+    <>
       <TopBar />
       <TopNavigation />
       <SecondaryNavigation items={navItems} />
       <main className="flex-1 overflow-auto">
         {children}
       </main>
-      <VoiceTutorialControls />
-    </VoiceTutorialProvider>
+    </>
   );
 };
 
@@ -154,6 +154,8 @@ const App = () => (
               <Route path="/travel-expenses/*" element={<TravelExpenses />} />
               <Route path="/forecasts/*" element={<Forecasts />} />
               <Route path="/requests/*" element={<Requests />} />
+              <Route path="/activity" element={<Activity />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AppLayout>
