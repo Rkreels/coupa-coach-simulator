@@ -2,488 +2,588 @@
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, MessageCircle, FileText, HelpCircle, Users, Plus, ThumbsUp, BarChart3 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar } from '@/components/ui/avatar';
+import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Search, Plus, ArrowRight, MessageSquare, Users, ThumbsUp, Clock } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+
+// Define types
+interface CommunityPost {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  content: string;
+  datePosted: string;
+  likes: number;
+  replies: number;
+  tags: string[];
+}
+
+interface NewPostData {
+  title: string;
+  category: string;
+  content: string;
+  tags: string[];
+}
+
+// Initial post data
+const initialPosts: CommunityPost[] = [
+  {
+    id: "POST-001",
+    title: "Best practices for invoice approval workflows",
+    author: "Sarah Johnson",
+    category: "Invoicing",
+    content: "I've been working on optimizing our invoice approval workflow and wanted to share some best practices we've implemented...",
+    datePosted: "2023-05-15",
+    likes: 24,
+    replies: 8,
+    tags: ["invoicing", "approvals", "best-practices"]
+  },
+  {
+    id: "POST-002",
+    title: "How to set up multi-tier supplier catalogs",
+    author: "Mike Chen",
+    category: "Suppliers",
+    content: "We're implementing a multi-tier supplier catalog system and I've found some efficient approaches to categorization...",
+    datePosted: "2023-05-10",
+    likes: 16,
+    replies: 12,
+    tags: ["suppliers", "catalogs", "setup"]
+  },
+  {
+    id: "POST-003",
+    title: "Supply chain risk mitigation strategies",
+    author: "Emily Davis",
+    category: "Supply Chain",
+    content: "With recent global events affecting supply chains, we've developed several risk mitigation strategies that have proven effective...",
+    datePosted: "2023-05-05",
+    likes: 42,
+    replies: 15,
+    tags: ["risk", "supply-chain", "strategy"]
+  }
+];
+
+// Available categories
+const categories = [
+  "General Discussion",
+  "Invoicing",
+  "Payments",
+  "Suppliers",
+  "Supply Chain",
+  "Requisitions",
+  "Best Practices",
+  "Feature Requests",
+  "Troubleshooting"
+];
 
 const Community = () => {
+  const [posts, setPosts] = useState<CommunityPost[]>(initialPosts);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [showNewDiscussionForm, setShowNewDiscussionForm] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  
+  // Form state for creating new posts
+  const [newPostData, setNewPostData] = useState<NewPostData>({
+    title: '',
+    category: '',
+    content: '',
+    tags: []
+  });
+  const [tagInput, setTagInput] = useState('');
 
-  const discussionCategories = [
-    { id: 'all', name: 'All Topics', count: 120 },
-    { id: 'invoicing', name: 'Invoicing', count: 42 },
-    { id: 'procurement', name: 'Procurement', count: 38 },
-    { id: 'sourcing', name: 'Sourcing', count: 25 },
-    { id: 'expenses', name: 'Expenses', count: 15 },
-  ];
-  
-  // Sample discussion data
-  const discussions = [
-    {
-      id: 1,
-      title: 'How to configure approval workflows for complex organizations?',
-      author: 'John Smith',
-      authorAvatar: '1',
-      replies: 12,
-      views: 156,
-      category: 'procurement',
-      lastActive: '2 days ago',
-      likes: 8,
-      isSticky: true,
-      participants: ['1', '2', '3']
-    },
-    {
-      id: 2,
-      title: 'Best practices for invoice exception handling',
-      author: 'Sarah Johnson',
-      authorAvatar: '2',
-      replies: 8,
-      views: 103,
-      category: 'invoicing',
-      lastActive: '5 hours ago',
-      likes: 5,
-      isSticky: false,
-      participants: ['2', '4', '5']
-    },
-    {
-      id: 3,
-      title: 'Integration with SAP: common challenges and solutions',
-      author: 'Michael Chen',
-      authorAvatar: '3',
-      replies: 15,
-      views: 210,
-      category: 'invoicing',
-      lastActive: '1 day ago',
-      likes: 12,
-      isSticky: false,
-      participants: ['3', '1', '5']
-    },
-    {
-      id: 4,
-      title: 'Setting up commodity codes for sourcing events',
-      author: 'Lisa Wong',
-      authorAvatar: '4',
-      replies: 6,
-      views: 98,
-      category: 'sourcing',
-      lastActive: '3 days ago',
-      likes: 3,
-      isSticky: false,
-      participants: ['4', '2']
-    },
-    {
-      id: 5,
-      title: 'Mobile expense report submission troubleshooting',
-      author: 'Robert Martinez',
-      authorAvatar: '5',
-      replies: 10,
-      views: 145,
-      category: 'expenses',
-      lastActive: '12 hours ago',
-      likes: 7,
-      isSticky: false,
-      participants: ['5', '1', '3', '4']
-    },
-  ];
-  
-  // Articles data
-  const articles = [
-    {
-      id: 1,
-      title: 'Getting Started with Invoice Management',
-      description: 'Learn how to set up and optimize your invoice processing workflow.',
-      category: 'Setup Guide',
-      readTime: '5 min',
-      views: 1245,
-    },
-    {
-      id: 2,
-      title: 'Advanced Approval Workflows',
-      description: 'Configure multi-level approvals for different organizational structures.',
-      category: 'Best Practice',
-      readTime: '8 min',
-      views: 980,
-    },
-    {
-      id: 3,
-      title: 'Supplier Onboarding Best Practices',
-      description: 'Streamline your supplier onboarding process with these proven techniques.',
-      category: 'Guide',
-      readTime: '6 min',
-      views: 876,
-    },
-  ];
+  // Handle creating a new post
+  const handleCreatePost = () => {
+    const newPost: CommunityPost = {
+      id: `POST-${posts.length + 1}`.padStart(7, '0'),
+      title: newPostData.title,
+      author: "Current User", // In a real app, would come from auth state
+      category: newPostData.category,
+      content: newPostData.content,
+      datePosted: new Date().toISOString().split('T')[0],
+      likes: 0,
+      replies: 0,
+      tags: newPostData.tags
+    };
 
-  const filteredDiscussions = activeCategory === 'all' 
-    ? discussions 
-    : discussions.filter(d => d.category === activeCategory);
-  
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implement search functionality here
-    console.log("Searching for:", searchQuery);
+    // Add the new post to the posts list
+    setPosts([newPost, ...posts]);
+    
+    // Reset form and close dialog
+    setNewPostData({
+      title: '',
+      category: '',
+      content: '',
+      tags: []
+    });
+    setTagInput('');
+    setIsCreateDialogOpen(false);
+
+    // Show success toast
+    toast({
+      title: "Post Created",
+      description: `Your post "${newPost.title}" has been published.`,
+    });
   };
+
+  // Handle adding a tag
+  const handleAddTag = () => {
+    if (!tagInput || newPostData.tags.includes(tagInput)) return;
+    
+    setNewPostData({
+      ...newPostData,
+      tags: [...newPostData.tags, tagInput]
+    });
+    setTagInput('');
+  };
+
+  // Handle removing a tag
+  const handleRemoveTag = (tag: string) => {
+    setNewPostData({
+      ...newPostData,
+      tags: newPostData.tags.filter(t => t !== tag)
+    });
+  };
+
+  // Handle viewing a post
+  const handleViewPost = (post: CommunityPost) => {
+    setSelectedPost(post);
+    setIsViewDialogOpen(true);
+  };
+
+  // Handle liking a post
+  const handleLikePost = (postId: string) => {
+    setPosts(posts.map(post => {
+      if (post.id === postId) {
+        return { ...post, likes: post.likes + 1 };
+      }
+      return post;
+    }));
+
+    toast({
+      title: "Post Liked",
+      description: "You liked this post.",
+    });
+  };
+
+  // Filter posts based on search query and category
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesCategory = categoryFilter === 'all' || post.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <ApplicationLayout 
       pageTitle="Community"
-      pageLoadScript="Welcome to the Coupa Community. Connect with other Coupa users, access knowledge base articles, and get support for your questions."
+      pageLoadScript="Welcome to the Community section. Connect with other Coupa users, share best practices, ask questions, and collaborate on solutions to common challenges."
     >
-      <div className="mb-6 flex justify-between items-center">
-        <form onSubmit={handleSearch} className="relative w-72">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search community resources..."
-            className="pl-10 pr-4 py-2 rounded-md border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </form>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search discussions..."
+              className="pl-10 pr-4 py-2 rounded-md border border-gray-300 w-64 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Category:</span>
+            <select 
+              className="text-sm border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         <Button 
+          onClick={() => setIsCreateDialogOpen(true)}
           className="bg-coupa-blue hover:bg-coupa-darkblue text-white flex items-center gap-2"
-          onClick={() => setShowNewDiscussionForm(!showNewDiscussionForm)}
         >
           <Plus className="h-4 w-4" /> 
           New Discussion
         </Button>
       </div>
       
-      {showNewDiscussionForm && (
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Start a New Discussion</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <VoiceElement
+          whatScript="This card shows total community engagement."
+          howScript="Use this to track overall community activity."
+        >
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Community Members</p>
+                <h3 className="text-3xl font-bold text-coupa-blue">1,245</h3>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-full">
+                <Users className="h-6 w-6 text-coupa-blue" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              <span className="font-medium">+25</span> this month
+            </div>
+          </Card>
+        </VoiceElement>
+        
+        <VoiceElement
+          whatScript="This card shows the number of active discussions."
+          howScript="Monitor to see what topics are currently being discussed."
+        >
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Active Discussions</p>
+                <h3 className="text-3xl font-bold text-purple-600">{posts.length}</h3>
+              </div>
+              <div className="bg-purple-100 p-3 rounded-full">
+                <MessageSquare className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              <span className="font-medium">12</span> new this week
+            </div>
+          </Card>
+        </VoiceElement>
+        
+        <VoiceElement
+          whatScript="This card shows your participation statistics."
+          howScript="Use this to track your engagement in the community."
+        >
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Your Contributions</p>
+                <h3 className="text-3xl font-bold text-green-600">17</h3>
+              </div>
+              <div className="bg-green-100 p-3 rounded-full">
+                <ThumbsUp className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <div className="mt-2 text-sm text-gray-600">
+              <span className="font-medium">5</span> posts, <span className="font-medium">12</span> replies
+            </div>
+          </Card>
+        </VoiceElement>
+      </div>
+      
+      <Card className="mb-6">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Topic</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Posted</TableHead>
+              <TableHead>Replies</TableHead>
+              <TableHead>Likes</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredPosts.map((post) => (
+              <TableRow key={post.id} className="hover:bg-gray-50">
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{post.title}</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {post.tags.map(tag => (
+                        <span key={tag} className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    {post.category}
+                  </span>
+                </TableCell>
+                <TableCell>{post.author}</TableCell>
+                <TableCell>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Clock className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                    {post.datePosted}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <MessageSquare className="h-4 w-4 text-gray-400 mr-1" />
+                    {post.replies}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <ThumbsUp className="h-4 w-4 text-gray-400 mr-1" />
+                    {post.likes}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-blue-600 hover:text-blue-800"
+                      onClick={() => handleViewPost(post)}
+                    >
+                      View
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-green-600 hover:text-green-800"
+                      onClick={() => handleLikePost(post.id)}
+                    >
+                      Like
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {filteredPosts.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  No posts found matching your search criteria.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
+      
+      <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+        <div>Showing {filteredPosts.length} of {posts.length} discussions</div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" disabled>Previous</Button>
+          <span className="px-3 py-1 border rounded">1</span>
+          <Button variant="outline" size="sm" disabled>Next</Button>
+        </div>
+      </div>
+
+      {/* Create Post Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Start New Discussion</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Title</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-                placeholder="Enter a descriptive title for your discussion"
+                value={newPostData.title}
+                onChange={(e) => setNewPostData({...newPostData, title: e.target.value})}
+                placeholder="Enter a clear, specific title for your discussion"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent">
-                {discussionCategories.filter(c => c.id !== 'all').map((category) => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Category</label>
+              <select
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+                value={newPostData.category}
+                onChange={(e) => setNewPostData({...newPostData, category: e.target.value})}
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-                rows={5}
-                placeholder="Describe your question or topic in detail"
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Content</label>
+              <Textarea
+                className="min-h-[150px] w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+                value={newPostData.content}
+                onChange={(e) => setNewPostData({...newPostData, content: e.target.value})}
+                placeholder="Share your question, idea, or experience in detail"
               />
             </div>
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowNewDiscussionForm(false)}
-              >
-                Cancel
-              </Button>
-              <Button className="bg-coupa-blue hover:bg-coupa-darkblue text-white">
-                Post Discussion
-              </Button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tags</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  className="flex-grow border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  placeholder="Add relevant tags"
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={handleAddTag}
+                >
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {newPostData.tags.map(tag => (
+                  <span key={tag} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
+                    {tag}
+                    <button 
+                      className="ml-1 text-gray-500 hover:text-gray-700"
+                      onClick={() => handleRemoveTag(tag)}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </Card>
-      )}
 
-      <Tabs defaultValue="discussions" className="mb-6">
-        <TabsList className="mb-4">
-          <TabsTrigger value="discussions" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" /> Discussions
-          </TabsTrigger>
-          <TabsTrigger value="knowledge" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" /> Knowledge Base
-          </TabsTrigger>
-          <TabsTrigger value="support" className="flex items-center gap-2">
-            <HelpCircle className="h-4 w-4" /> Support
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="discussions">
-          <div className="flex mb-6">
-            <div className="w-56 pr-6">
-              <h3 className="font-medium text-gray-700 mb-2">Categories</h3>
-              <div className="space-y-1">
-                {discussionCategories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant="ghost"
-                    className={`w-full justify-start ${activeCategory === category.id ? 'bg-gray-100 text-coupa-blue' : ''}`}
-                    onClick={() => setActiveCategory(category.id)}
-                  >
-                    <span>{category.name}</span>
-                    <Badge variant="outline" className="ml-auto">{category.count}</Badge>
-                  </Button>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsCreateDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreatePost}
+              disabled={!newPostData.title || !newPostData.category || !newPostData.content}
+            >
+              Post Discussion
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Post Dialog */}
+      {selectedPost && (
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl">{selectedPost.title}</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                    {selectedPost.author[0]}
+                  </div>
+                  <div className="ml-3">
+                    <p className="font-medium">{selectedPost.author}</p>
+                    <p className="text-xs text-gray-500">Posted on {selectedPost.datePosted}</p>
+                  </div>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                  {selectedPost.category}
+                </span>
+              </div>
+              
+              <div className="border-t border-b py-4 my-4">
+                <p className="text-gray-800 whitespace-pre-line">{selectedPost.content}</p>
+              </div>
+              
+              <div className="flex flex-wrap gap-1 mb-4">
+                {selectedPost.tags.map(tag => (
+                  <span key={tag} className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full">
+                    {tag}
+                  </span>
                 ))}
               </div>
               
-              <div className="mt-6">
-                <h3 className="font-medium text-gray-700 mb-2">Stats</h3>
-                <div className="text-sm space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Topics:</span>
-                    <span className="font-medium">120</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Posts:</span>
-                    <span className="font-medium">843</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Active Users:</span>
-                    <span className="font-medium">38</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">All Discussions</h2>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">Sort by:</span>
-                  <select className="text-sm border border-gray-300 rounded-md py-1 px-2">
-                    <option>Most Recent</option>
-                    <option>Most Popular</option>
-                    <option>Most Replies</option>
-                  </select>
-                </div>
-              </div>
-
-              <Card>
-                <div className="divide-y">
-                  {filteredDiscussions.map((discussion) => (
-                    <div 
-                      key={discussion.id} 
-                      className={`p-4 hover:bg-gray-50 ${discussion.isSticky ? 'bg-blue-50' : ''}`}
-                    >
-                      <div className="flex justify-between">
-                        <div className="flex-1 pr-4">
-                          <div className="flex items-center gap-2 mb-1">
-                            {discussion.isSticky && (
-                              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Pinned</Badge>
-                            )}
-                            <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">
-                              {discussionCategories.find(c => c.id === discussion.category)?.name || discussion.category}
-                            </Badge>
-                          </div>
-                          <h3 className="font-medium text-coupa-blue">{discussion.title}</h3>
-                          <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="h-3 w-3" /> {discussion.replies} replies
-                            </span>
-                            <span>•</span>
-                            <span>{discussion.views} views</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <ThumbsUp className="h-3 w-3" /> {discussion.likes}
-                            </span>
-                            <span>•</span>
-                            <span>Last post {discussion.lastActive}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="flex -space-x-2">
-                            {discussion.participants.map((participant, index) => (
-                              <Avatar key={index} className="w-8 h-8 border-2 border-white">
-                                <div className="bg-gray-300 w-full h-full flex items-center justify-center text-xs text-gray-600">
-                                  {participant}
-                                </div>
-                              </Avatar>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-              
-              <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                <div>Showing {filteredDiscussions.length} of {discussions.length} discussions</div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" disabled>Previous</Button>
-                  <span className="px-3 py-1 border rounded">1</span>
-                  <Button variant="outline" size="sm">Next</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="knowledge">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <VoiceElement
-              whatScript="This section provides access to the community knowledge base."
-              howScript="Browse articles and guides for using Coupa effectively."
-            >
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-green-100 p-3 rounded-full mb-4">
-                    <FileText className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">Getting Started</h3>
-                  <p className="text-gray-600 mb-4">New to Coupa? Start here with our comprehensive guides.</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <Badge className="bg-gray-100 text-gray-800">Setup</Badge>
-                    <Badge className="bg-gray-100 text-gray-800">Basics</Badge>
-                    <Badge className="bg-gray-100 text-gray-800">Tutorials</Badge>
-                  </div>
-                </div>
-              </Card>
-            </VoiceElement>
-            
-            <VoiceElement
-              whatScript="This section provides access to advanced guides."
-              howScript="Access technical documentation for advanced Coupa features."
-            >
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-blue-100 p-3 rounded-full mb-4">
-                    <BarChart3 className="h-8 w-8 text-coupa-blue" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">Best Practices</h3>
-                  <p className="text-gray-600 mb-4">Learn optimal strategies for using Coupa in your organization.</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <Badge className="bg-gray-100 text-gray-800">Optimization</Badge>
-                    <Badge className="bg-gray-100 text-gray-800">Advanced</Badge>
-                  </div>
-                </div>
-              </Card>
-            </VoiceElement>
-            
-            <VoiceElement
-              whatScript="This section provides access to integration documentation."
-              howScript="Learn how to integrate Coupa with other systems."
-            >
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-purple-100 p-3 rounded-full mb-4">
-                    <Users className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">User Guides</h3>
-                  <p className="text-gray-600 mb-4">Step-by-step guides for specific user roles and tasks.</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <Badge className="bg-gray-100 text-gray-800">Admin</Badge>
-                    <Badge className="bg-gray-100 text-gray-800">Buyer</Badge>
-                    <Badge className="bg-gray-100 text-gray-800">Approver</Badge>
-                  </div>
-                </div>
-              </Card>
-            </VoiceElement>
-          </div>
-          
-          <h2 className="text-xl font-bold mb-4">Popular Knowledge Articles</h2>
-          <Card className="mb-6">
-            <div className="divide-y">
-              {articles.map((article) => (
-                <div key={article.id} className="p-4 hover:bg-gray-50">
-                  <h3 className="font-medium text-coupa-blue">{article.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {article.description}
-                  </p>
-                  <div className="mt-2 flex items-center text-sm">
-                    <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2">{article.category}</span>
-                    <span className="text-gray-500">{article.readTime} read • {article.views} views</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="support">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-3">Contact Support</h3>
-              <p className="text-gray-600 mb-4">
-                Need help with a specific issue? Our support team is ready to assist you.
-              </p>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-                    placeholder="Brief description of your issue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <textarea
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-                    rows={4}
-                    placeholder="Please provide details about your issue"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                  <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent">
-                    <option>Low - General Question</option>
-                    <option>Medium - Issue affecting work</option>
-                    <option>High - Critical Issue</option>
-                  </select>
-                </div>
-                <Button className="bg-coupa-blue hover:bg-coupa-darkblue text-white">
-                  Submit Ticket
+              <div className="flex items-center space-x-4">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-1"
+                  onClick={() => handleLikePost(selectedPost.id)}
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                  Like ({selectedPost.likes})
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Reply
                 </Button>
               </div>
-            </Card>
-            
-            <div className="space-y-6">
-              <Card className="p-6">
-                <h3 className="text-lg font-medium mb-3">Support Resources</h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a href="#" className="flex items-center text-coupa-blue hover:underline">
-                      <FileText className="h-4 w-4 mr-2" /> Frequently Asked Questions
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="flex items-center text-coupa-blue hover:underline">
-                      <FileText className="h-4 w-4 mr-2" /> Troubleshooting Guide
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="flex items-center text-coupa-blue hover:underline">
-                      <FileText className="h-4 w-4 mr-2" /> System Requirements
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="flex items-center text-coupa-blue hover:underline">
-                      <FileText className="h-4 w-4 mr-2" /> Release Notes
-                    </a>
-                  </li>
-                </ul>
-              </Card>
-              
-              <Card className="p-6">
-                <h3 className="text-lg font-medium mb-3">Support Hours</h3>
-                <p className="text-gray-600 mb-2">Our support team is available:</p>
-                <ul className="space-y-1 text-gray-600">
-                  <li>Monday - Friday: 8:00 AM - 8:00 PM EST</li>
-                  <li>Saturday: 9:00 AM - 5:00 PM EST</li>
-                  <li>Sunday: Closed</li>
-                </ul>
-                <p className="mt-4 text-gray-600">
-                  For urgent issues outside of these hours, please use our emergency support hotline.
-                </p>
-              </Card>
+
+              <div className="mt-6">
+                <h3 className="font-medium mb-4">Replies ({selectedPost.replies})</h3>
+                
+                {selectedPost.replies > 0 ? (
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
+                          J
+                        </div>
+                        <div className="ml-3">
+                          <p className="font-medium">John Smith</p>
+                          <p className="text-xs text-gray-500">Posted 2 days ago</p>
+                        </div>
+                      </div>
+                      <p className="text-gray-800">This is really insightful! We've been struggling with a similar issue and your approach could help us.</p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+                          M
+                        </div>
+                        <div className="ml-3">
+                          <p className="font-medium">Mary Johnson</p>
+                          <p className="text-xs text-gray-500">Posted yesterday</p>
+                        </div>
+                      </div>
+                      <p className="text-gray-800">Have you considered integrating this with our current workflow? I'd be interested to hear more about implementation details.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    No replies yet. Be the first to respond!
+                  </div>
+                )}
+                
+                <div className="mt-6">
+                  <Textarea
+                    className="min-h-[100px] w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
+                    placeholder="Write your reply..."
+                  />
+                  <div className="mt-3 flex justify-end">
+                    <Button>Post Reply</Button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+
+            <DialogFooter>
+              <Button onClick={() => setIsViewDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </ApplicationLayout>
   );
 };

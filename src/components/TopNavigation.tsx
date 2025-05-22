@@ -1,114 +1,79 @@
-
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from "@/lib/utils";
-import { Home, FileText, ShoppingCart, CreditCard, Package, Globe, Shield, Settings, MoreHorizontal, Users, Briefcase, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { VoiceElement } from './VoiceElement';
+import { NavLink } from './ui/nav-link';
+import { usePathname } from 'next/navigation';
+import { Home, Package, FileText, ShoppingBag, CreditCard, Truck, FileCog, BarChart, ShieldAlert, Users } from 'lucide-react';
 
-export const TopNavigation: React.FC = () => {
-  const location = useLocation();
-  
-  const mainNavItems = [
-    { 
-      path: '/', 
-      name: 'Home', 
-      icon: <Home className="h-4 w-4" /> 
-    },
-    { 
-      path: '/travel-expenses', 
-      name: 'Travel & Expenses', 
-      icon: <Briefcase className="h-4 w-4" /> 
-    },
-    { 
-      path: '/forecasts', 
-      name: 'Forecasts', 
-      icon: <TrendingUp className="h-4 w-4" /> 
-    },
-    { 
-      path: '/requests', 
-      name: 'Requests', 
-      icon: <FileText className="h-4 w-4" /> 
-    },
-    { 
-      path: '/orders', 
-      name: 'Orders', 
-      icon: <ShoppingCart className="h-4 w-4" /> 
-    },
-    { 
-      path: '/invoices', 
-      name: 'Invoices', 
-      icon: <FileText className="h-4 w-4" /> 
-    },
-    { 
-      path: '/community', 
-      name: 'Community', 
-      icon: <Users className="h-4 w-4" /> 
-    },
-    { 
-      path: '/payments', 
-      name: 'Payments', 
-      icon: <CreditCard className="h-4 w-4" /> 
-    },
-    { 
-      path: '/inventory', 
-      name: 'Inventory', 
-      icon: <Package className="h-4 w-4" /> 
-    },
-    { 
-      path: '/sourcing', 
-      name: 'Sourcing', 
-      icon: <Globe className="h-4 w-4" /> 
-    },
-    { 
-      path: '/spend-guard', 
-      name: 'Spend Guard', 
-      icon: <Shield className="h-4 w-4" /> 
-    },
-    { 
-      path: '/supply-chain', 
-      name: 'Supply Chain', 
-      icon: <Package className="h-4 w-4" /> 
-    },
-    { 
-      path: '/setup', 
-      name: 'Setup', 
-      icon: <Settings className="h-4 w-4" /> 
-    },
-    { 
-      path: '/more', 
-      name: 'More...', 
-      icon: <MoreHorizontal className="h-4 w-4" />,
-      className: "bg-coupa-blue text-white hover:bg-coupa-darkblue" 
-    },
-  ];
+const isActive = (path: string, currentPath: string) => {
+  return path === currentPath;
+};
+
+const TopNavigation = () => {
+  const pathname = usePathname();
 
   return (
-    <nav className="border-b border-gray-200 bg-white">
-      <div className="flex items-center px-2 py-1 overflow-x-auto">
-        {mainNavItems.map((item) => (
-          <VoiceElement
-            key={item.path}
-            whatScript={`This is the ${item.name} navigation link. It takes you to the ${item.name} section of the application.`}
-            howScript={`Click on this link to access the ${item.name} area and manage related tasks.`}
-            triggerOn="hover"
-          >
-            <Link to={item.path}>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "h-9 text-sm gap-1 whitespace-nowrap",
-                  location.pathname === item.path && "bg-gray-100 text-coupa-blue font-medium",
-                  item.className
-                )}
-              >
-                {item.icon}
-                <span>{item.name}</span>
-              </Button>
-            </Link>
-          </VoiceElement>
-        ))}
+    <div className="flex items-center space-x-2 text-sm">
+      <div className="relative group">
+        <NavLink href="/" isActive={isActive('/', pathname)}>
+          <Home className="w-4 h-4 mr-1.5" />
+          Home
+        </NavLink>
       </div>
-    </nav>
+      <div className="relative group">
+        <NavLink href="/requisitions" isActive={isActive('/requisitions', pathname)}>
+          <ShoppingBag className="w-4 h-4 mr-1.5" />
+          Requisitions
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/orders" isActive={isActive('/orders', pathname)}>
+          <Package className="w-4 h-4 mr-1.5" />
+          Orders
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/invoices" isActive={isActive('/invoices', pathname)}>
+          <FileText className="w-4 h-4 mr-1.5" />
+          Invoices
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/payments" isActive={isActive('/payments', pathname)}>
+          <CreditCard className="w-4 h-4 mr-1.5" />
+          Payments
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/inventory" isActive={isActive('/inventory', pathname)}>
+          <Truck className="w-4 h-4 mr-1.5" />
+          Inventory
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/spend-guard" isActive={isActive('/spend-guard', pathname)}>
+          <ShieldAlert className="w-4 h-4 mr-1.5" />
+          Spend Guard
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/supply-chain" isActive={isActive('/supply-chain', pathname)}>
+          <BarChart className="w-4 h-4 mr-1.5" />
+          Supply Chain
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/community" isActive={isActive('/community', pathname)}>
+          <Users className="w-4 h-4 mr-1.5" />
+          Community
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/setup" isActive={isActive('/setup', pathname)}>
+          <FileCog className="w-4 h-4 mr-1.5" />
+          Setup
+        </NavLink>
+      </div>
+    </div>
   );
 };
+
+export default TopNavigation;
