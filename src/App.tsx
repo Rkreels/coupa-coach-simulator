@@ -25,7 +25,10 @@ import Forecasts from "./pages/Forecasts";
 import Requests from "./pages/Requests";
 import Activity from "./pages/Activity";
 import Notifications from "./pages/Notifications";
+import Suppliers from "./pages/Suppliers";
+import Contracts from "./pages/Contracts";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
+import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +42,20 @@ const getSecondaryNavItems = (path: string) => {
         { name: "Receipts", path: "/receipts" },
         { name: "Catalogs", path: "/catalogs" },
         { name: "Suppliers", path: "/suppliers" }
+      ];
+    case "/suppliers":
+      return [
+        { name: "All Suppliers", path: "/suppliers" },
+        { name: "Onboarding", path: "/suppliers/onboarding" },
+        { name: "Performance", path: "/suppliers/performance" },
+        { name: "Risk Management", path: "/suppliers/risk" },
+      ];
+    case "/contracts":
+      return [
+        { name: "All Contracts", path: "/contracts" },
+        { name: "Templates", path: "/contracts/templates" },
+        { name: "Approval Workflow", path: "/contracts/approval" },
+        { name: "Reporting", path: "/contracts/reporting" },
       ];
     case "/sourcing":
       return [
@@ -158,9 +175,14 @@ const App = () => (
                 <Route path="/requests/*" element={<Requests />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/notifications" element={<Notifications />} />
+                <Route path="/suppliers" element={<Suppliers />} />
+                <Route path="/suppliers/*" element={<Suppliers />} />
+                <Route path="/contracts" element={<Contracts />} />
+                <Route path="/contracts/*" element={<Contracts />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AppLayout>
+            <VoiceTutorialControls />
           </div>
         </VoiceTutorialProvider>
       </BrowserRouter>

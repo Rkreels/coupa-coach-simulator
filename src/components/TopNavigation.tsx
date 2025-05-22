@@ -1,7 +1,19 @@
 
 import React from 'react';
 import { NavLink as RouterLink, useLocation } from 'react-router-dom';
-import { Home, Package, FileText, ShoppingBag, CreditCard, Truck, FileCog, BarChart, ShieldAlert, Users } from 'lucide-react';
+import { 
+  Home, 
+  Package, 
+  FileText, 
+  ShoppingBag, 
+  CreditCard, 
+  Truck, 
+  FileCog, 
+  BarChart, 
+  ShieldAlert, 
+  Users, 
+  File
+} from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 const isActive = (path: string, currentPath: string) => {
@@ -35,7 +47,7 @@ const TopNavigation = () => {
   const pathname = location.pathname;
 
   return (
-    <div className="flex items-center space-x-2 text-sm">
+    <div className="flex items-center space-x-2 text-sm overflow-x-auto px-4 py-1">
       <div className="relative group">
         <NavLink href="/" isActive={isActive('/', pathname)}>
           <Home className="w-4 h-4 mr-1.5" />
@@ -67,6 +79,18 @@ const TopNavigation = () => {
         </NavLink>
       </div>
       <div className="relative group">
+        <NavLink href="/suppliers" isActive={isActive('/suppliers', pathname)}>
+          <Users className="w-4 h-4 mr-1.5" />
+          Suppliers
+        </NavLink>
+      </div>
+      <div className="relative group">
+        <NavLink href="/contracts" isActive={isActive('/contracts', pathname)}>
+          <File className="w-4 h-4 mr-1.5" />
+          Contracts
+        </NavLink>
+      </div>
+      <div className="relative group">
         <NavLink href="/inventory" isActive={isActive('/inventory', pathname)}>
           <Truck className="w-4 h-4 mr-1.5" />
           Inventory
@@ -82,12 +106,6 @@ const TopNavigation = () => {
         <NavLink href="/supply-chain" isActive={isActive('/supply-chain', pathname)}>
           <BarChart className="w-4 h-4 mr-1.5" />
           Supply Chain
-        </NavLink>
-      </div>
-      <div className="relative group">
-        <NavLink href="/community" isActive={isActive('/community', pathname)}>
-          <Users className="w-4 h-4 mr-1.5" />
-          Community
         </NavLink>
       </div>
       <div className="relative group">

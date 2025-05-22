@@ -23,11 +23,25 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
   hoverDelay = 2000, // default 2 seconds
   forcePlay = false,
 }) => {
-  const { playScript, detailLevel, enabled } = useVoiceTutorial();
+  // Use try-catch to prevent errors when used outside of VoiceTutorialProvider
+  let voiceTutorialContext;
+  try {
+    voiceTutorialContext = useVoiceTutorial();
+  } catch (error) {
+    // If we're outside a provider, just render the children without voice functionality
+    return <div className={className || ''}>{children}</div>;
+  }
+
+  const { playScript, detailLevel, enabled } = voiceTutorialContext;
   const [isHovering, setIsHovering] = useState(false);
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const elementRef = useRef<HTMLDivElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
+
+  // If voice tutorial is disabled, just render children
+  if (!enabled) {
+    return <div className={className || ''}>{children}</div>;
+  }
 
   // Logic to determine which script to play based on detail level
   const getAppropriateScript = () => {

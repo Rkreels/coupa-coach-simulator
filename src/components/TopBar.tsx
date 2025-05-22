@@ -1,8 +1,17 @@
 
 import React from 'react';
-import { Search, Bell, HelpCircle, User } from 'lucide-react';
+import { Bell, HelpCircle, User, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { GlobalSearch } from './GlobalSearch';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 
 export const TopBar: React.FC = () => {
   return (
@@ -16,25 +25,35 @@ export const TopBar: React.FC = () => {
         </a>
         
         <div className="ml-6 relative flex-grow w-80">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="What do you need?"
-              className="pl-3 pr-9 py-1.5 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Search className="h-4 w-4" />
-            </button>
-          </div>
+          <GlobalSearch />
         </div>
       </div>
       
       <div className="flex items-center space-x-3">
-        <div className="relative">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <User className="h-5 w-5 text-gray-600" />
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <User className="h-5 w-5 text-gray-600" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         
         <Link to="/notifications">
           <Button variant="ghost" size="icon" className="relative">
