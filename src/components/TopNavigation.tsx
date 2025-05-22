@@ -1,14 +1,16 @@
+
 import React from 'react';
 import { NavLink } from './ui/nav-link';
-import { usePathname } from 'next/navigation';
+import { useLocation } from 'react-router-dom';
 import { Home, Package, FileText, ShoppingBag, CreditCard, Truck, FileCog, BarChart, ShieldAlert, Users } from 'lucide-react';
 
 const isActive = (path: string, currentPath: string) => {
-  return path === currentPath;
+  return currentPath === path || (path !== '/' && currentPath.startsWith(path));
 };
 
 const TopNavigation = () => {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
 
   return (
     <div className="flex items-center space-x-2 text-sm">

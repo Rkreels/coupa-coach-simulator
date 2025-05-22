@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +11,7 @@ import Analytics from "./pages/Analytics";
 import Invoices from "./pages/Invoices";
 import NotFound from "./pages/NotFound";
 import { TopBar } from "./components/TopBar";
-import { TopNavigation } from "./components/TopNavigation";
+import TopNavigation from "./components/TopNavigation";
 import { SecondaryNavigation } from "./components/SecondaryNavigation";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
