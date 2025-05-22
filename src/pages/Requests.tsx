@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
@@ -17,6 +16,9 @@ import { Textarea } from "@/components/ui/textarea";
 // Define the status type to ensure consistency
 type RequestStatus = "approved" | "pending" | "rejected";
 
+// Define the priority type to ensure consistency
+type RequestPriority = "High" | "Medium" | "Low";
+
 // Initial mock data for requests
 const initialRequests = [
   {
@@ -27,7 +29,7 @@ const initialRequests = [
     requestedBy: "Sarah Johnson",
     dateCreated: "2023-05-12",
     dateNeeded: "2023-06-01",
-    priority: "Medium",
+    priority: "Medium" as RequestPriority,
     description: "Need IT support for upcoming marketing event including A/V setup and technical assistance."
   },
   {
@@ -38,7 +40,7 @@ const initialRequests = [
     requestedBy: "John Smith",
     dateCreated: "2023-05-15",
     dateNeeded: "2023-06-15",
-    priority: "High",
+    priority: "High" as RequestPriority,
     description: "Support needed for relocating 25 staff members to the new office space."
   },
   {
@@ -49,7 +51,7 @@ const initialRequests = [
     requestedBy: "Emily Davis",
     dateCreated: "2023-05-10",
     dateNeeded: "2023-05-25",
-    priority: "Low",
+    priority: "Low" as RequestPriority,
     description: "Need Adobe Creative Suite licenses for the design team of 3 members."
   },
   {
@@ -60,7 +62,7 @@ const initialRequests = [
     requestedBy: "Michael Chen",
     dateCreated: "2023-05-08",
     dateNeeded: "2023-05-20",
-    priority: "Medium",
+    priority: "Medium" as RequestPriority,
     description: "Catering for quarterly department meeting for 20 people."
   }
 ];
@@ -73,7 +75,7 @@ interface Request {
   requestedBy: string;
   dateCreated: string;
   dateNeeded: string;
-  priority: 'High' | 'Medium' | 'Low';
+  priority: RequestPriority;
   description: string;
 }
 
@@ -81,7 +83,7 @@ interface RequestFormData {
   title: string;
   type: string;
   dateNeeded: string;
-  priority: 'High' | 'Medium' | 'Low';
+  priority: RequestPriority;
   description: string;
 }
 
