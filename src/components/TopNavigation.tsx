@@ -1,11 +1,33 @@
 
 import React from 'react';
-import { NavLink } from './ui/nav-link';
-import { useLocation } from 'react-router-dom';
+import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 import { Home, Package, FileText, ShoppingBag, CreditCard, Truck, FileCog, BarChart, ShieldAlert, Users } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 const isActive = (path: string, currentPath: string) => {
   return currentPath === path || (path !== '/' && currentPath.startsWith(path));
+};
+
+interface NavLinkProps {
+  href: string;
+  isActive?: boolean;
+  children: React.ReactNode;
+}
+
+const NavLink: React.FC<NavLinkProps> = ({ href, isActive, children }) => {
+  return (
+    <RouterLink
+      to={href}
+      className={cn(
+        "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+        isActive
+          ? "bg-gray-100 text-gray-900"
+          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+      )}
+    >
+      {children}
+    </RouterLink>
+  );
 };
 
 const TopNavigation = () => {

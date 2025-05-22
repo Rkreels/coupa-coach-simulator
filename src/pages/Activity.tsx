@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { 
   Clock, User, FileText, ShoppingBag, Package, CheckCircle2, 
-  AlertCircle, XCircle, Calendar
+  AlertCircle, XCircle, Calendar, Search, Filter, ArrowDownWideNarrow
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type ActivityType = 'all' | 'approvals' | 'documents' | 'requests' | 'orders';
 
@@ -24,6 +26,8 @@ type Activity = {
 
 const ActivityPage: React.FC = () => {
   const [filter, setFilter] = useState<ActivityType>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
 
   // Mock activity data
   const activities: Activity[] = [
@@ -71,12 +75,58 @@ const ActivityPage: React.FC = () => {
       date: 'Yesterday',
       status: 'pending',
       description: 'Marketing department - Q4 campaign'
+    },
+    {
+      id: '6',
+      type: 'document',
+      title: 'Supplier Agreement Updated',
+      user: 'Wade Cooper',
+      date: 'Yesterday',
+      status: 'completed',
+      description: 'Updated payment terms - Net 45'
+    },
+    {
+      id: '7',
+      type: 'request',
+      title: 'Travel Expense Approval',
+      user: 'Arlene McCoy',
+      date: '2 days ago',
+      status: 'pending',
+      description: 'Client meeting in Chicago - $1,245.50'
+    },
+    {
+      id: '8',
+      type: 'order',
+      title: 'Purchase Order #PO-2023-042 Created',
+      user: 'Devon Webb',
+      date: '2 days ago',
+      status: 'completed',
+      description: 'IT Equipment - $4,582.75'
     }
   ];
 
-  const filteredActivities = filter === 'all' 
-    ? activities 
-    : activities.filter(activity => activity.type === filter.slice(0, -1));
+  // Filter activities based on type and search query
+  const filteredActivities = activities
+    .filter(activity => filter === 'all' ? true : activity.type === filter.slice(0, -1))
+    .filter(activity => 
+      searchQuery ? 
+        (activity.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        activity.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        activity.user.toLowerCase().includes(searchQuery.toLowerCase())) 
+        : true
+    );
+
+  // Sort activities
+  const sortedActivities = [...filteredActivities].sort((a, b) => {
+    if (sortBy === 'newest') {
+      return activities.indexOf(a) - activities.indexOf(b);
+    } else if (sortBy === 'oldest') {
+      return activities.indexOf(b) - activities.indexOf(a);
+    } else if (sortBy === 'status') {
+      return a.status.localeCompare(b.status);
+    }
+    return 0;
+  });
 
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
@@ -98,21 +148,73 @@ const ActivityPage: React.FC = () => {
     }
   };
 
+  const getActivityCount = (type: ActivityType) => {
+    if (type === 'all') return activities.length;
+    return activities.filter(activity => activity.type === type.slice(0, -1)).length;
+  };
+
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">Recent Activity</h1>
+      <div className="flex flex-col md:flex-row justify-between items-start mb-6">
+        <h1 className="text-2xl font-bold">Recent Activity</h1>
+        
+        <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search activities..."
+              className="pl-8 pr-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[140px]">
+                <ArrowDownWideNarrow className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="status">By Status</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button variant="outline" size="icon">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
       
       <Tabs defaultValue="all" value={filter} onValueChange={(v) => setFilter(v as ActivityType)}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All Activity</TabsTrigger>
-          <TabsTrigger value="approvals">Approvals</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="requests">Requests</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
+        <TabsList className="mb-6 w-full overflow-x-auto">
+          <TabsTrigger value="all">
+            All Activity
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getActivityCount('all')}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="approvals">
+            Approvals
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getActivityCount('approvals')}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="documents">
+            Documents
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getActivityCount('documents')}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="requests">
+            Requests
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getActivityCount('requests')}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="orders">
+            Orders
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getActivityCount('orders')}</Badge>
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value={filter} className="space-y-4">
-          {filteredActivities.map((activity) => (
+          {sortedActivities.map((activity) => (
             <Card key={activity.id} className="hover:bg-gray-50 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
@@ -144,7 +246,7 @@ const ActivityPage: React.FC = () => {
             </Card>
           ))}
           
-          {filteredActivities.length === 0 && (
+          {sortedActivities.length === 0 && (
             <div className="text-center py-10">
               <div className="mx-auto bg-gray-100 rounded-full p-3 w-12 h-12 flex items-center justify-center mb-4">
                 <Calendar className="h-6 w-6 text-gray-500" />

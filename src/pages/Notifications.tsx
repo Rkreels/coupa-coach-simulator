@@ -4,9 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { 
   Bell, ShieldAlert, FileText, Clock, AlertCircle, 
-  CheckCircle, XCircle, Calendar, Package, ShoppingBag
+  CheckCircle, XCircle, Calendar, Package, ShoppingBag, Search, Filter
 } from 'lucide-react';
 
 type NotificationType = 'all' | 'alerts' | 'approvals' | 'information';
@@ -24,6 +25,7 @@ type Notification = {
 
 const NotificationsPage: React.FC = () => {
   const [filter, setFilter] = useState<NotificationType>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -74,12 +76,49 @@ const NotificationsPage: React.FC = () => {
       isRead: true,
       priority: 'high',
       relatedTo: 'Contracts'
+    },
+    {
+      id: '6',
+      type: 'information',
+      title: 'New supplier added',
+      message: 'TechSupply Inc. has been added to your approved suppliers list.',
+      time: 'Yesterday',
+      isRead: true,
+      priority: 'low',
+      relatedTo: 'Suppliers'
+    },
+    {
+      id: '7',
+      type: 'approval',
+      title: 'New requisition for review',
+      message: 'Requisition #REQ-2023-078 from Engineering requires your review.',
+      time: '2 days ago',
+      isRead: false,
+      priority: 'high',
+      relatedTo: 'Requisitions'
+    },
+    {
+      id: '8',
+      type: 'information',
+      title: 'System maintenance scheduled',
+      message: 'System will be down for maintenance on Saturday from 2-4 AM EST.',
+      time: '2 days ago',
+      isRead: true,
+      priority: 'medium',
+      relatedTo: 'System'
     }
   ]);
 
-  const filteredNotifications = filter === 'all' 
-    ? notifications 
-    : notifications.filter(notification => notification.type === filter.slice(0, -1));
+  // Filter notifications based on type and search
+  const filteredNotifications = notifications
+    .filter(notification => filter === 'all' ? true : notification.type === filter.slice(0, -1))
+    .filter(notification => 
+      searchQuery ? 
+        (notification.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        notification.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (notification.relatedTo && notification.relatedTo.toLowerCase().includes(searchQuery.toLowerCase())))
+        : true
+    );
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -117,9 +156,14 @@ const NotificationsPage: React.FC = () => {
     }
   };
 
+  const getNotificationCount = (type: NotificationType) => {
+    if (type === 'all') return notifications.length;
+    return notifications.filter(n => n.type === type.slice(0, -1)).length;
+  };
+
   return (
     <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Notifications</h1>
           {unreadCount > 0 && (
@@ -127,34 +171,44 @@ const NotificationsPage: React.FC = () => {
           )}
         </div>
         
-        <Button variant="outline" size="sm" onClick={markAllAsRead}>
-          Mark all as read
-        </Button>
+        <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search notifications..."
+              className="pl-8 pr-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <Button variant="outline" size="icon">
+            <Filter className="h-4 w-4" />
+          </Button>
+          
+          <Button variant="outline" onClick={markAllAsRead}>
+            Mark all as read
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue="all" value={filter} onValueChange={(v) => setFilter(v as NotificationType)}>
-        <TabsList className="mb-6">
+        <TabsList className="mb-6 w-full overflow-x-auto">
           <TabsTrigger value="all">
             All 
-            <Badge variant="outline" className="ml-2 bg-gray-100">{notifications.length}</Badge>
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getNotificationCount('all')}</Badge>
           </TabsTrigger>
           <TabsTrigger value="alerts">
             Alerts
-            <Badge variant="outline" className="ml-2 bg-gray-100">
-              {notifications.filter(n => n.type === 'alert').length}
-            </Badge>
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getNotificationCount('alerts')}</Badge>
           </TabsTrigger>
           <TabsTrigger value="approvals">
             Approvals
-            <Badge variant="outline" className="ml-2 bg-gray-100">
-              {notifications.filter(n => n.type === 'approval').length}
-            </Badge>
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getNotificationCount('approvals')}</Badge>
           </TabsTrigger>
           <TabsTrigger value="information">
             Information
-            <Badge variant="outline" className="ml-2 bg-gray-100">
-              {notifications.filter(n => n.type === 'information').length}
-            </Badge>
+            <Badge variant="outline" className="ml-2 bg-gray-100">{getNotificationCount('information')}</Badge>
           </TabsTrigger>
         </TabsList>
         
