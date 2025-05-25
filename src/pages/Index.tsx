@@ -162,7 +162,7 @@ const Index = () => {
               <TabsContent value="analytics">
                 <div className="h-[300px] flex items-center justify-center bg-gray-50 border rounded-md">
                   <div className="text-center">
-                    <BarChart className="mx-auto h-10 w-10 text-gray-400" />
+                    <BarChart3 className="mx-auto h-10 w-10 text-gray-400" />
                     <h3 className="mt-2 text-lg font-medium">Advanced Analytics</h3>
                     <p className="mt-1 text-sm text-gray-500">Configure your analytics and KPIs</p>
                     <Button className="mt-4">Configure Analytics</Button>
