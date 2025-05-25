@@ -177,12 +177,14 @@ const PurchaseOrdersPage = () => {
         totalAmount: po.totalAmount || 0,
         currency: po.currency || 'USD',
         expectedDelivery: po.expectedDelivery || '',
+        actualDelivery: po.actualDelivery,
         requestor: po.requestor || '',
         department: po.department || '',
         priority: po.priority || 'medium',
         approvalStatus: 'not_required' as const,
         lineItems: po.lineItems || [],
-        notes: po.notes || ''
+        notes: po.notes || '',
+        attachments: po.attachments || []
       };
       addPurchaseOrder(poWithDefaults);
     });
@@ -316,11 +318,16 @@ const PurchaseOrdersPage = () => {
                     totalAmount: 'Total Amount',
                     currency: 'Currency',
                     dateCreated: 'Date Created',
+                    dateModified: 'Date Modified',
                     expectedDelivery: 'Expected Delivery',
+                    actualDelivery: 'Actual Delivery',
                     requestor: 'Requestor',
                     department: 'Department',
                     priority: 'Priority',
-                    notes: 'Notes'
+                    approvalStatus: 'Approval Status',
+                    lineItems: 'Line Items',
+                    notes: 'Notes',
+                    attachments: 'Attachments'
                   }}
                 />
                 <Button onClick={handleAddPO}>

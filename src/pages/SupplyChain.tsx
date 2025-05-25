@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useSupplyChainData, SupplyChainFlow } from '../hooks/useSupplyChainData';
 import { supplyChainData, voiceScripts } from '../data/supplyChainData';
-import { RefreshCw, Info, Plus, MoreVertical, Edit, Trash, Optimize } from 'lucide-react';
+import { RefreshCw, Info, Plus, MoreVertical, Edit, Trash, Settings } from 'lucide-react';
 import { VoiceElement } from '../components/VoiceElement';
 import { useToast } from '@/hooks/use-toast';
 
@@ -235,7 +235,7 @@ const SupplyChain = () => {
           Edit Flow
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Optimize className="h-4 w-4 mr-2" />
+          <Settings className="h-4 w-4 mr-2" />
           Optimize Route
         </DropdownMenuItem>
         <DropdownMenuItem 
