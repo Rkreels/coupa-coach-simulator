@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MainLayout } from '../components/MainLayout';
 import { DataTable } from '@/components/ui/data-table';
@@ -144,7 +143,16 @@ const Suppliers = () => {
 
   const handleSubmit = () => {
     const supplierData = {
-      ...formValues,
+      name: formValues.name || '',
+      email: formValues.email || '',
+      phone: formValues.phone || '',
+      contactPerson: formValues.contactPerson || '',
+      address: formValues.address || '',
+      category: formValues.category || 'IT Services',
+      status: formValues.status || 'pending',
+      riskLevel: formValues.riskLevel || 'medium',
+      spend: formValues.spend || '$0',
+      performance: formValues.performance || 0,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 
