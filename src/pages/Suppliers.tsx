@@ -111,10 +111,16 @@ const Suppliers = () => {
   const handleAddSupplier = () => {
     setEditingSupplier(null);
     setFormValues({
+      name: '',
+      email: '',
+      phone: '',
+      contactPerson: '',
+      address: '',
+      category: 'IT Services',
       status: 'pending',
       riskLevel: 'medium',
-      performance: 0,
       spend: '$0',
+      performance: 0,
       lastUpdated: new Date().toISOString().split('T')[0]
     });
     setDialogOpen(true);
@@ -137,20 +143,19 @@ const Suppliers = () => {
   };
 
   const handleSubmit = () => {
+    const supplierData = {
+      ...formValues,
+      lastUpdated: new Date().toISOString().split('T')[0]
+    };
+
     if (editingSupplier) {
-      updateItem(editingSupplier.id, {
-        ...formValues,
-        lastUpdated: new Date().toISOString().split('T')[0]
-      });
+      updateItem(editingSupplier.id, supplierData);
       toast({
         title: "Supplier Updated",
         description: `${formValues.name} has been updated successfully.`,
       });
     } else {
-      addItem({
-        ...formValues,
-        lastUpdated: new Date().toISOString().split('T')[0]
-      });
+      addItem(supplierData);
       toast({
         title: "Supplier Added",
         description: `${formValues.name} has been added successfully.`,
@@ -161,10 +166,20 @@ const Suppliers = () => {
 
   const handleImport = (importedData: Supplier[]) => {
     importedData.forEach(supplier => {
-      addItem({
-        ...supplier,
+      const supplierWithDefaults = {
+        name: supplier.name || '',
+        email: supplier.email || '',
+        phone: supplier.phone || '',
+        contactPerson: supplier.contactPerson || '',
+        address: supplier.address || '',
+        category: supplier.category || 'IT Services',
+        status: supplier.status || 'pending',
+        riskLevel: supplier.riskLevel || 'medium',
+        spend: supplier.spend || '$0',
+        performance: supplier.performance || 0,
         lastUpdated: new Date().toISOString().split('T')[0]
-      });
+      };
+      addItem(supplierWithDefaults);
     });
   };
 
@@ -278,15 +293,18 @@ const Suppliers = () => {
                   onImport={handleImport}
                   filename="suppliers"
                   headers={{
+                    id: 'ID',
                     name: 'Company Name',
                     email: 'Email',
                     phone: 'Phone',
                     contactPerson: 'Contact Person',
+                    address: 'Address',
                     category: 'Category',
                     status: 'Status',
                     riskLevel: 'Risk Level',
                     spend: 'Annual Spend',
-                    performance: 'Performance'
+                    performance: 'Performance',
+                    lastUpdated: 'Last Updated'
                   }}
                 />
                 <Button onClick={handleAddSupplier}>
