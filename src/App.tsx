@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,7 +31,7 @@ import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
 
 const queryClient = new QueryClient();
 
-// Enhanced navigation configuration with module-specific settings
+// Enhanced navigation configuration matching Coupa's comprehensive module structure
 const getModuleNavigation = (path: string) => {
   const basePath = path.split('/')[1] || '';
   
@@ -41,65 +40,73 @@ const getModuleNavigation = (path: string) => {
       items: [
         { name: "Dashboard", path: "/", description: "Main dashboard overview" },
         { name: "Recent Activity", path: "/activity", description: "View recent system activity" },
-        { name: "Notifications", path: "/notifications", description: "Check notifications and alerts" }
+        { name: "Notifications", path: "/notifications", description: "Check notifications and alerts" },
+        { name: "My Tasks", path: "/tasks", description: "Personal task management" },
+        { name: "Quick Actions", path: "/quick-actions", description: "Frequently used actions" }
+      ],
+      showNavigation: true
+    },
+    "requisitions": {
+      items: [
+        { name: "Create Requisition", path: "/requisitions", description: "Create new requisition" },
+        { name: "My Requisitions", path: "/requisitions/my", description: "View your requisitions" },
+        { name: "Pending Approval", path: "/requisitions/pending", description: "Requisitions awaiting approval" },
+        { name: "Approved", path: "/requisitions/approved", description: "Approved requisitions" },
+        { name: "Templates", path: "/requisitions/templates", description: "Requisition templates" },
+        { name: "Shopping", path: "/requisitions/shopping", description: "Browse catalogs and shop" },
+        { name: "Quick Order", path: "/requisitions/quick-order", description: "Quick order entry" }
       ],
       showNavigation: true
     },
     "orders": {
       items: [
-        { name: "Purchase Orders", path: "/orders", description: "Manage purchase orders" },
-        { name: "Requisitions", path: "/requisitions", description: "Handle requisition requests" },
-        { name: "Receipts", path: "/receipts", description: "Track receipt confirmations" },
-        { name: "Catalogs", path: "/catalogs", description: "Browse supplier catalogs" },
-        { name: "Suppliers", path: "/suppliers", description: "Manage supplier relationships" }
+        { name: "All Orders", path: "/orders", description: "View all purchase orders" },
+        { name: "Create PO", path: "/orders/create", description: "Create new purchase order" },
+        { name: "Pending", path: "/orders/pending", description: "Orders pending approval" },
+        { name: "Approved", path: "/orders/approved", description: "Approved orders" },
+        { name: "Sent", path: "/orders/sent", description: "Orders sent to suppliers" },
+        { name: "Receipts", path: "/orders/receipts", description: "Order receipts" },
+        { name: "Returns", path: "/orders/returns", description: "Return merchandise" },
+        { name: "Order Lines", path: "/orders/lines", description: "Order line items" }
       ],
       showNavigation: true
     },
     "suppliers": {
       items: [
         { name: "All Suppliers", path: "/suppliers", description: "View all suppliers" },
-        { name: "Onboarding", path: "/suppliers/onboarding", description: "Supplier onboarding process" },
+        { name: "Supplier Information", path: "/suppliers/information", description: "Supplier details and info" },
         { name: "Performance", path: "/suppliers/performance", description: "Supplier performance metrics" },
-        { name: "Risk Management", path: "/suppliers/risk", description: "Assess supplier risks" }
+        { name: "Risk Assessment", path: "/suppliers/risk", description: "Supplier risk management" },
+        { name: "Onboarding", path: "/suppliers/onboarding", description: "Supplier onboarding process" },
+        { name: "Catalogs", path: "/suppliers/catalogs", description: "Supplier catalogs" },
+        { name: "Questionnaires", path: "/suppliers/questionnaires", description: "Supplier questionnaires" },
+        { name: "Certifications", path: "/suppliers/certifications", description: "Supplier certifications" }
       ],
       showNavigation: true
     },
     "contracts": {
       items: [
         { name: "All Contracts", path: "/contracts", description: "View all contracts" },
-        { name: "Templates", path: "/contracts/templates", description: "Contract templates library" },
-        { name: "Approval Workflow", path: "/contracts/approval", description: "Contract approval process" },
-        { name: "Reporting", path: "/contracts/reporting", description: "Contract analytics and reports" }
+        { name: "Create Contract", path: "/contracts/create", description: "Create new contract" },
+        { name: "Templates", path: "/contracts/templates", description: "Contract templates" },
+        { name: "Pending Approval", path: "/contracts/pending", description: "Contracts awaiting approval" },
+        { name: "Active Contracts", path: "/contracts/active", description: "Currently active contracts" },
+        { name: "Expiring Soon", path: "/contracts/expiring", description: "Contracts expiring soon" },
+        { name: "Amendments", path: "/contracts/amendments", description: "Contract amendments" },
+        { name: "Compliance", path: "/contracts/compliance", description: "Contract compliance tracking" }
       ],
       showNavigation: true
     },
     "sourcing": {
       items: [
-        { name: "Auctions", path: "/sourcing", description: "Manage sourcing auctions" },
-        { name: "RFPs", path: "/rfps", description: "Request for proposals" },
-        { name: "Contracts", path: "/contracts", description: "Sourcing contracts" },
-        { name: "Suppliers", path: "/suppliers", description: "Sourcing suppliers" }
-      ],
-      showNavigation: true
-    },
-    "supply-chain": {
-      items: [
-        { name: "Overview", path: "/supply-chain", description: "Supply chain overview" },
-        { name: "Data Management", path: "/supply-chain/data-management", description: "Manage supply chain data" },
-        { name: "Data Flows", path: "/supply-chain/data-flows", description: "Monitor data flows" },
-        { name: "Model Building", path: "/supply-chain/model-building", description: "Build supply chain models" },
-        { name: "Macros", path: "/supply-chain/macros", description: "Automation macros" },
-        { name: "Queue Management", path: "/supply-chain/queue", description: "Manage processing queues" },
-        { name: "Administration", path: "/supply-chain/admin", description: "System administration" }
-      ],
-      showNavigation: true
-    },
-    "analytics": {
-      items: [
-        { name: "Dashboards", path: "/analytics", description: "Interactive dashboards" },
-        { name: "Reports", path: "/analytics/reports", description: "Generated reports" },
-        { name: "Data Explorer", path: "/analytics/explorer", description: "Explore data sets" },
-        { name: "Settings", path: "/analytics/settings", description: "Analytics configuration" }
+        { name: "Sourcing Events", path: "/sourcing", description: "All sourcing events" },
+        { name: "RFIs", path: "/sourcing/rfis", description: "Request for Information" },
+        { name: "RFPs", path: "/sourcing/rfps", description: "Request for Proposals" },
+        { name: "RFQs", path: "/sourcing/rfqs", description: "Request for Quotes" },
+        { name: "Auctions", path: "/sourcing/auctions", description: "Reverse auctions" },
+        { name: "Awards", path: "/sourcing/awards", description: "Sourcing awards" },
+        { name: "Savings Tracking", path: "/sourcing/savings", description: "Track sourcing savings" },
+        { name: "Event Templates", path: "/sourcing/templates", description: "Sourcing event templates" }
       ],
       showNavigation: true
     },
@@ -108,44 +115,89 @@ const getModuleNavigation = (path: string) => {
         { name: "All Invoices", path: "/invoices", description: "View all invoices" },
         { name: "Pending Approval", path: "/invoices/pending", description: "Invoices awaiting approval" },
         { name: "Processing", path: "/invoices/processing", description: "Invoices being processed" },
-        { name: "Paid", path: "/invoices/paid", description: "Completed payments" },
-        { name: "Disputes", path: "/invoices/disputes", description: "Invoice disputes" }
-      ],
-      showNavigation: true
-    },
-    "travel-expenses": {
-      items: [
-        { name: "Dashboard", path: "/travel-expenses", description: "Travel expenses overview" },
-        { name: "Expenses", path: "/travel-expenses/expenses", description: "Expense entries" },
-        { name: "Reports", path: "/travel-expenses/reports", description: "Expense reports" },
-        { name: "Travel Requests", path: "/travel-expenses/requests", description: "Travel request management" }
-      ],
-      showNavigation: true
-    },
-    "community": {
-      items: [
-        { name: "Home", path: "/community", description: "Community homepage" },
-        { name: "Forum", path: "/community/forum", description: "Discussion forums" },
-        { name: "Knowledge Base", path: "/community/knowledge", description: "Knowledge articles" },
-        { name: "Support", path: "/community/support", description: "Get support" }
+        { name: "Approved", path: "/invoices/approved", description: "Approved invoices" },
+        { name: "Paid", path: "/invoices/paid", description: "Paid invoices" },
+        { name: "Disputes", path: "/invoices/disputes", description: "Invoice disputes" },
+        { name: "Credits", path: "/invoices/credits", description: "Credit memos" },
+        { name: "Matching", path: "/invoices/matching", description: "Invoice matching" }
       ],
       showNavigation: true
     },
     "payments": {
       items: [
-        { name: "Dashboard", path: "/payments", description: "Payments overview" },
-        { name: "Processing", path: "/payments/processing", description: "Process payments" },
-        { name: "History", path: "/payments/history", description: "Payment history" },
-        { name: "Settings", path: "/payments/settings", description: "Payment settings" }
+        { name: "Payment Dashboard", path: "/payments", description: "Payments overview" },
+        { name: "Payment Runs", path: "/payments/runs", description: "Execute payment runs" },
+        { name: "Scheduled Payments", path: "/payments/scheduled", description: "Scheduled payments" },
+        { name: "Payment History", path: "/payments/history", description: "Payment transaction history" },
+        { name: "Bank Accounts", path: "/payments/accounts", description: "Manage bank accounts" },
+        { name: "Payment Methods", path: "/payments/methods", description: "Payment method setup" },
+        { name: "Reconciliation", path: "/payments/reconciliation", description: "Payment reconciliation" },
+        { name: "Cash Flow", path: "/payments/cash-flow", description: "Cash flow analysis" }
       ],
       showNavigation: true
     },
     "inventory": {
       items: [
-        { name: "Dashboard", path: "/inventory", description: "Inventory overview" },
+        { name: "Inventory Overview", path: "/inventory", description: "Inventory dashboard" },
         { name: "Items", path: "/inventory/items", description: "Manage inventory items" },
+        { name: "Stock Levels", path: "/inventory/stock", description: "Current stock levels" },
         { name: "Transactions", path: "/inventory/transactions", description: "Inventory transactions" },
-        { name: "Settings", path: "/inventory/settings", description: "Inventory settings" }
+        { name: "Adjustments", path: "/inventory/adjustments", description: "Inventory adjustments" },
+        { name: "Locations", path: "/inventory/locations", description: "Warehouse locations" },
+        { name: "Cycle Counts", path: "/inventory/cycle-counts", description: "Cycle counting" },
+        { name: "Reports", path: "/inventory/reports", description: "Inventory reports" }
+      ],
+      showNavigation: true
+    },
+    "spend-guard": {
+      items: [
+        { name: "Spend Analysis", path: "/spend-guard", description: "Spend analysis dashboard" },
+        { name: "Budget Tracking", path: "/spend-guard/budget", description: "Budget tracking and alerts" },
+        { name: "Compliance", path: "/spend-guard/compliance", description: "Spend compliance monitoring" },
+        { name: "Savings Opportunities", path: "/spend-guard/savings", description: "Identify savings opportunities" },
+        { name: "Risk Management", path: "/spend-guard/risk", description: "Spend risk assessment" },
+        { name: "Category Analysis", path: "/spend-guard/categories", description: "Spend by category" },
+        { name: "Supplier Analysis", path: "/spend-guard/supplier-analysis", description: "Supplier spend analysis" },
+        { name: "Reports", path: "/spend-guard/reports", description: "Spend analytics reports" }
+      ],
+      showNavigation: true
+    },
+    "analytics": {
+      items: [
+        { name: "Dashboards", path: "/analytics", description: "Interactive dashboards" },
+        { name: "Spend Analytics", path: "/analytics/spend", description: "Spend analysis and reporting" },
+        { name: "Supplier Analytics", path: "/analytics/suppliers", description: "Supplier performance analytics" },
+        { name: "Contract Analytics", path: "/analytics/contracts", description: "Contract analytics" },
+        { name: "Savings Analytics", path: "/analytics/savings", description: "Savings tracking and analysis" },
+        { name: "Compliance Reports", path: "/analytics/compliance", description: "Compliance reporting" },
+        { name: "Custom Reports", path: "/analytics/custom", description: "Build custom reports" },
+        { name: "Data Explorer", path: "/analytics/explorer", description: "Explore data sets" }
+      ],
+      showNavigation: true
+    },
+    "travel-expenses": {
+      items: [
+        { name: "Expense Dashboard", path: "/travel-expenses", description: "Travel expenses overview" },
+        { name: "Create Expense", path: "/travel-expenses/create", description: "Create expense report" },
+        { name: "My Expenses", path: "/travel-expenses/my", description: "My expense reports" },
+        { name: "Pending Reports", path: "/travel-expenses/pending", description: "Reports pending approval" },
+        { name: "Travel Requests", path: "/travel-expenses/requests", description: "Travel request management" },
+        { name: "Receipts", path: "/travel-expenses/receipts", description: "Receipt management" },
+        { name: "Reimbursements", path: "/travel-expenses/reimbursements", description: "Reimbursement tracking" },
+        { name: "Policies", path: "/travel-expenses/policies", description: "Travel and expense policies" }
+      ],
+      showNavigation: true
+    },
+    "setup": {
+      items: [
+        { name: "System Setup", path: "/setup", description: "System configuration" },
+        { name: "User Management", path: "/setup/users", description: "Manage users and roles" },
+        { name: "Approval Workflows", path: "/setup/workflows", description: "Configure approval workflows" },
+        { name: "Custom Fields", path: "/setup/fields", description: "Custom field configuration" },
+        { name: "Integrations", path: "/setup/integrations", description: "System integrations" },
+        { name: "Notifications", path: "/setup/notifications", description: "Notification settings" },
+        { name: "Security", path: "/setup/security", description: "Security settings" },
+        { name: "Data Management", path: "/setup/data", description: "Data import/export tools" }
       ],
       showNavigation: true
     }
@@ -196,8 +248,11 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/orders" element={<PurchaseOrders />} />
+                <Route path="/orders/*" element={<PurchaseOrders />} />
                 <Route path="/requisitions" element={<Requisitions />} />
+                <Route path="/requisitions/*" element={<Requisitions />} />
                 <Route path="/sourcing" element={<Auctions />} />
+                <Route path="/sourcing/*" element={<Auctions />} />
                 <Route path="/supply-chain/*" element={<SupplyChain />} />
                 <Route path="/analytics/*" element={<Analytics />} />
                 <Route path="/invoices/*" element={<Invoices />} />
