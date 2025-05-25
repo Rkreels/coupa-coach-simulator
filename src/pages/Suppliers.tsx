@@ -1,111 +1,172 @@
 
 import React, { useState } from 'react';
 import { MainLayout } from '../components/MainLayout';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Search, Plus, MoreVertical, ChevronDown, Filter, Download, Upload } from 'lucide-react';
-
-interface Supplier {
-  id: string;
-  name: string;
-  category: string;
-  status: 'active' | 'inactive' | 'pending';
-  riskLevel: 'low' | 'medium' | 'high';
-  spend: string;
-  performance: number;
-  lastUpdated: string;
-}
-
-const suppliersData: Supplier[] = [
-  {
-    id: '1',
-    name: 'Acme Corporation',
-    category: 'IT Services',
-    status: 'active',
-    riskLevel: 'low',
-    spend: '$452,300',
-    performance: 92,
-    lastUpdated: '2023-05-15'
-  },
-  {
-    id: '2',
-    name: 'TechSupplies Inc.',
-    category: 'Hardware',
-    status: 'active',
-    riskLevel: 'medium',
-    spend: '$310,750',
-    performance: 78,
-    lastUpdated: '2023-05-10'
-  },
-  {
-    id: '3',
-    name: 'Global Services Ltd.',
-    category: 'Consulting',
-    status: 'active',
-    riskLevel: 'low',
-    spend: '$275,400',
-    performance: 95,
-    lastUpdated: '2023-05-12'
-  },
-  {
-    id: '4',
-    name: 'Office Solutions',
-    category: 'Office Supplies',
-    status: 'active',
-    riskLevel: 'low',
-    spend: '$198,625',
-    performance: 88,
-    lastUpdated: '2023-05-08'
-  },
-  {
-    id: '5',
-    name: 'Digital Marketing Group',
-    category: 'Marketing',
-    status: 'pending',
-    riskLevel: 'medium',
-    spend: '$145,800',
-    performance: 0,
-    lastUpdated: '2023-05-18'
-  },
-  {
-    id: '6',
-    name: 'Industrial Supplies Co.',
-    category: 'Manufacturing',
-    status: 'inactive',
-    riskLevel: 'high',
-    spend: '$98,250',
-    performance: 62,
-    lastUpdated: '2023-04-25'
-  }
-];
+import { DataTable } from '@/components/ui/data-table';
+import { FormDialog } from '@/components/ui/form-dialog';
+import { ImportExport } from '@/components/ui/import-export';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useDataManager } from '../hooks/useDataManager';
+import { initialSuppliersData } from '../data/suppliersData';
+import { Supplier } from '../types/supplier';
+import { Plus, MoreVertical, Edit, Trash } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Suppliers = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+  const [formValues, setFormValues] = useState<Record<string, any>>({});
 
-  const filteredSuppliers = suppliersData.filter(supplier => {
-    // Filter by search term
-    const matchesSearch = supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      supplier.category.toLowerCase().includes(searchTerm.toLowerCase());
-
-    // Filter by tab
-    const matchesTab = activeTab === 'all' || 
-      (activeTab === 'active' && supplier.status === 'active') ||
-      (activeTab === 'pending' && supplier.status === 'pending') ||
-      (activeTab === 'inactive' && supplier.status === 'inactive');
-
-    return matchesSearch && matchesTab;
+  const {
+    data: suppliers,
+    allData,
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    sortConfig,
+    handleSort,
+    addItem,
+    updateItem,
+    deleteItem,
+    totalCount,
+    filteredCount
+  } = useDataManager({
+    storageKey: 'suppliers',
+    initialData: initialSuppliersData,
+    searchFields: ['name', 'category', 'email', 'contactPerson']
   });
+
+  const formFields = [
+    { name: 'name', label: 'Company Name', type: 'text' as const, required: true },
+    { name: 'email', label: 'Email', type: 'email' as const, required: true },
+    { name: 'phone', label: 'Phone', type: 'text' as const },
+    { name: 'contactPerson', label: 'Contact Person', type: 'text' as const, required: true },
+    { name: 'address', label: 'Address', type: 'textarea' as const },
+    { 
+      name: 'category', 
+      label: 'Category', 
+      type: 'select' as const, 
+      required: true,
+      options: [
+        { value: 'IT Services', label: 'IT Services' },
+        { value: 'Hardware', label: 'Hardware' },
+        { value: 'Consulting', label: 'Consulting' },
+        { value: 'Office Supplies', label: 'Office Supplies' },
+        { value: 'Marketing', label: 'Marketing' },
+        { value: 'Manufacturing', label: 'Manufacturing' }
+      ]
+    },
+    { 
+      name: 'status', 
+      label: 'Status', 
+      type: 'select' as const, 
+      required: true,
+      options: [
+        { value: 'active', label: 'Active' },
+        { value: 'inactive', label: 'Inactive' },
+        { value: 'pending', label: 'Pending' }
+      ]
+    },
+    { 
+      name: 'riskLevel', 
+      label: 'Risk Level', 
+      type: 'select' as const, 
+      required: true,
+      options: [
+        { value: 'low', label: 'Low' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'high', label: 'High' }
+      ]
+    },
+    { name: 'spend', label: 'Annual Spend', type: 'text' as const, placeholder: '$0' },
+    { name: 'performance', label: 'Performance %', type: 'number' as const, placeholder: '0-100' }
+  ];
+
+  const columns = [
+    { key: 'name' as keyof Supplier, header: 'Name', sortable: true },
+    { key: 'category' as keyof Supplier, header: 'Category', sortable: true },
+    { 
+      key: 'status' as keyof Supplier, 
+      header: 'Status', 
+      render: (value: string) => getStatusBadge(value as Supplier['status'])
+    },
+    { 
+      key: 'riskLevel' as keyof Supplier, 
+      header: 'Risk Level', 
+      render: (value: string) => getRiskBadge(value as Supplier['riskLevel'])
+    },
+    { key: 'spend' as keyof Supplier, header: 'Annual Spend', sortable: true },
+    { 
+      key: 'performance' as keyof Supplier, 
+      header: 'Performance', 
+      render: (value: number) => getPerformanceDisplay(value)
+    },
+    { key: 'lastUpdated' as keyof Supplier, header: 'Last Updated', sortable: true }
+  ];
+
+  const handleAddSupplier = () => {
+    setEditingSupplier(null);
+    setFormValues({
+      status: 'pending',
+      riskLevel: 'medium',
+      performance: 0,
+      spend: '$0',
+      lastUpdated: new Date().toISOString().split('T')[0]
+    });
+    setDialogOpen(true);
+  };
+
+  const handleEditSupplier = (supplier: Supplier) => {
+    setEditingSupplier(supplier);
+    setFormValues(supplier);
+    setDialogOpen(true);
+  };
+
+  const handleDeleteSupplier = (supplier: Supplier) => {
+    if (window.confirm(`Are you sure you want to delete ${supplier.name}?`)) {
+      deleteItem(supplier.id);
+      toast({
+        title: "Supplier Deleted",
+        description: `${supplier.name} has been removed.`,
+      });
+    }
+  };
+
+  const handleSubmit = () => {
+    if (editingSupplier) {
+      updateItem(editingSupplier.id, {
+        ...formValues,
+        lastUpdated: new Date().toISOString().split('T')[0]
+      });
+      toast({
+        title: "Supplier Updated",
+        description: `${formValues.name} has been updated successfully.`,
+      });
+    } else {
+      addItem({
+        ...formValues,
+        lastUpdated: new Date().toISOString().split('T')[0]
+      });
+      toast({
+        title: "Supplier Added",
+        description: `${formValues.name} has been added successfully.`,
+      });
+    }
+    setDialogOpen(false);
+  };
+
+  const handleImport = (importedData: Supplier[]) => {
+    importedData.forEach(supplier => {
+      addItem({
+        ...supplier,
+        lastUpdated: new Date().toISOString().split('T')[0]
+      });
+    });
+  };
 
   const getStatusBadge = (status: Supplier['status']) => {
     switch (status) {
@@ -143,140 +204,121 @@ const Suppliers = () => {
     return <span className={colorClass}>{performance}%</span>;
   };
 
+  const renderActions = (supplier: Supplier) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => handleEditSupplier(supplier)}>
+          <Edit className="h-4 w-4 mr-2" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => handleDeleteSupplier(supplier)}
+          className="text-red-600"
+        >
+          <Trash className="h-4 w-4 mr-2" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <MainLayout pageTitle="Supplier Management">
       <div className="space-y-6">
-        {/* Top Cards */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-1">
                 <p className="text-sm text-gray-500">Total Suppliers</p>
-                <p className="text-3xl font-bold">324</p>
-                <p className="text-sm text-green-600">+12 this month</p>
+                <p className="text-3xl font-bold">{totalCount}</p>
+                <p className="text-sm text-green-600">
+                  {allData.filter(s => s.status === 'active').length} active
+                </p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-1">
-                <p className="text-sm text-gray-500">Average Supplier Performance</p>
-                <p className="text-3xl font-bold">86%</p>
-                <p className="text-sm text-green-600">+2.4% vs last quarter</p>
+                <p className="text-sm text-gray-500">Average Performance</p>
+                <p className="text-3xl font-bold">
+                  {Math.round(allData.reduce((acc, s) => acc + s.performance, 0) / allData.length || 0)}%
+                </p>
+                <p className="text-sm text-blue-600">Across all suppliers</p>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-col gap-1">
-                <p className="text-sm text-gray-500">Suppliers Requiring Attention</p>
-                <p className="text-3xl font-bold">18</p>
-                <p className="text-sm text-red-600">5 high risk suppliers</p>
+                <p className="text-sm text-gray-500">High Risk Suppliers</p>
+                <p className="text-3xl font-bold text-red-600">
+                  {allData.filter(s => s.riskLevel === 'high').length}
+                </p>
+                <p className="text-sm text-red-600">Require attention</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Suppliers Table */}
+        {/* Main Table */}
         <Card>
-          <CardHeader className="pb-0">
-            <CardTitle>Suppliers</CardTitle>
-          </CardHeader>
-
-          <CardContent className="pt-6">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                <div className="flex items-center gap-2 flex-1">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input 
-                      placeholder="Search suppliers..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Button variant="outline" className="h-10 gap-1">
-                    <Filter className="h-4 w-4" />
-                    Filter
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" className="gap-1">
-                    <Upload className="h-4 w-4" />
-                    Import
-                  </Button>
-                  <Button variant="outline" className="gap-1">
-                    <Download className="h-4 w-4" />
-                    Export
-                  </Button>
-                  <Button className="gap-1">
-                    <Plus className="h-4 w-4" />
-                    Add Supplier
-                  </Button>
-                </div>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>Suppliers ({filteredCount} of {totalCount})</CardTitle>
+              <div className="flex gap-2">
+                <ImportExport
+                  data={allData}
+                  onImport={handleImport}
+                  filename="suppliers"
+                  headers={{
+                    name: 'Company Name',
+                    email: 'Email',
+                    phone: 'Phone',
+                    contactPerson: 'Contact Person',
+                    category: 'Category',
+                    status: 'Status',
+                    riskLevel: 'Risk Level',
+                    spend: 'Annual Spend',
+                    performance: 'Performance'
+                  }}
+                />
+                <Button onClick={handleAddSupplier}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Supplier
+                </Button>
               </div>
-
-              <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">All Suppliers</TabsTrigger>
-                  <TabsTrigger value="active">Active</TabsTrigger>
-                  <TabsTrigger value="pending">Pending</TabsTrigger>
-                  <TabsTrigger value="inactive">Inactive</TabsTrigger>
-                </TabsList>
-
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Risk Level</TableHead>
-                        <TableHead>Annual Spend</TableHead>
-                        <TableHead>Performance</TableHead>
-                        <TableHead>Last Updated</TableHead>
-                        <TableHead></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredSuppliers.map((supplier) => (
-                        <TableRow key={supplier.id}>
-                          <TableCell>
-                            <div className="font-medium">{supplier.name}</div>
-                          </TableCell>
-                          <TableCell>{supplier.category}</TableCell>
-                          <TableCell>{getStatusBadge(supplier.status)}</TableCell>
-                          <TableCell>{getRiskBadge(supplier.riskLevel)}</TableCell>
-                          <TableCell>{supplier.spend}</TableCell>
-                          <TableCell>{getPerformanceDisplay(supplier.performance)}</TableCell>
-                          <TableCell>{new Date(supplier.lastUpdated).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>View Details</DropdownMenuItem>
-                                <DropdownMenuItem>Edit Supplier</DropdownMenuItem>
-                                <DropdownMenuItem>Risk Assessment</DropdownMenuItem>
-                                <DropdownMenuItem>Performance History</DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </Tabs>
             </div>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              data={suppliers}
+              columns={columns}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+              actions={renderActions}
+            />
           </CardContent>
         </Card>
+
+        <FormDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          title={editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
+          fields={formFields}
+          values={formValues}
+          onValuesChange={setFormValues}
+          onSubmit={handleSubmit}
+          submitText={editingSupplier ? 'Update' : 'Add'}
+        />
       </div>
     </MainLayout>
   );
