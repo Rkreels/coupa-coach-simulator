@@ -1,260 +1,358 @@
 
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
-import { VoiceElement } from '../components/VoiceElement';
+import { DataTable } from '@/components/ui/data-table';
+import { FormDialog } from '@/components/ui/form-dialog';
+import { ImportExport } from '@/components/ui/import-export';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, ArrowRight, ShoppingCart, Clock } from 'lucide-react';
-import { purchaseOrders, suppliers, voiceScripts } from '../data/mockData';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { usePurchaseOrders, PurchaseOrder } from '../hooks/usePurchaseOrders';
+import { Plus, MoreVertical, Edit, Trash, Eye, Send } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const PurchaseOrdersPage = () => {
-  const [showNewPOForm, setShowNewPOForm] = useState(false);
+  const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingPO, setEditingPO] = useState<PurchaseOrder | null>(null);
+  const [formValues, setFormValues] = useState<Record<string, any>>({});
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+  const {
+    purchaseOrders,
+    allPurchaseOrders,
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    sortConfig,
+    handleSort,
+    addPurchaseOrder,
+    updatePurchaseOrder,
+    deletePurchaseOrder,
+    totalCount,
+    filteredCount,
+    metrics
+  } = usePurchaseOrders();
+
+  const formFields = [
+    { name: 'title', label: 'PO Title', type: 'text' as const, required: true },
+    { name: 'vendor', label: 'Vendor Name', type: 'text' as const, required: true },
+    { name: 'vendorId', label: 'Vendor ID', type: 'text' as const, required: true },
+    { 
+      name: 'status', 
+      label: 'Status', 
+      type: 'select' as const, 
+      required: true,
+      options: [
+        { value: 'draft', label: 'Draft' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'approved', label: 'Approved' },
+        { value: 'sent', label: 'Sent' },
+        { value: 'received', label: 'Received' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'canceled', label: 'Canceled' }
+      ]
+    },
+    { name: 'totalAmount', label: 'Total Amount', type: 'number' as const, required: true },
+    { name: 'currency', label: 'Currency', type: 'text' as const, placeholder: 'USD' },
+    { name: 'expectedDelivery', label: 'Expected Delivery', type: 'date' as const, required: true },
+    { name: 'requestor', label: 'Requestor', type: 'text' as const, required: true },
+    { name: 'department', label: 'Department', type: 'text' as const, required: true },
+    { 
+      name: 'priority', 
+      label: 'Priority', 
+      type: 'select' as const, 
+      required: true,
+      options: [
+        { value: 'low', label: 'Low' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'high', label: 'High' },
+        { value: 'urgent', label: 'Urgent' }
+      ]
+    },
+    { name: 'notes', label: 'Notes', type: 'textarea' as const }
+  ];
+
+  const columns = [
+    { key: 'id' as keyof PurchaseOrder, header: 'PO Number', sortable: true },
+    { key: 'title' as keyof PurchaseOrder, header: 'Title', sortable: true },
+    { 
+      key: 'status' as keyof PurchaseOrder, 
+      header: 'Status', 
+      render: (value: string) => getStatusBadge(value as PurchaseOrder['status'])
+    },
+    { key: 'vendor' as keyof PurchaseOrder, header: 'Vendor', sortable: true },
+    { 
+      key: 'totalAmount' as keyof PurchaseOrder, 
+      header: 'Total Amount', 
+      sortable: true,
+      render: (value: number, item: PurchaseOrder) => `${item.currency || 'USD'} ${value.toLocaleString()}`
+    },
+    { key: 'requestor' as keyof PurchaseOrder, header: 'Requestor', sortable: true },
+    { key: 'expectedDelivery' as keyof PurchaseOrder, header: 'Expected Delivery', sortable: true },
+    { 
+      key: 'priority' as keyof PurchaseOrder, 
+      header: 'Priority', 
+      render: (value: string) => getPriorityBadge(value as PurchaseOrder['priority'])
+    }
+  ];
+
+  const handleAddPO = () => {
+    setEditingPO(null);
+    setFormValues({
+      title: '',
+      vendor: '',
+      vendorId: '',
+      status: 'draft',
+      totalAmount: 0,
       currency: 'USD',
-    }).format(amount);
+      expectedDelivery: '',
+      requestor: '',
+      department: '',
+      priority: 'medium',
+      approvalStatus: 'not_required',
+      lineItems: [],
+      notes: ''
+    });
+    setDialogOpen(true);
   };
 
-  return (
-    <ApplicationLayout 
-      pageTitle="Purchase Orders"
-      pageLoadScript={voiceScripts.purchaseOrders.pageLoad}
-    >
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search purchase orders..."
-              className="pl-10 pr-4 py-2 rounded-md border border-gray-300 w-64 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Status:</span>
-            <select className="text-sm border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent">
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="sent">Sent</option>
-              <option value="received">Received</option>
-              <option value="completed">Completed</option>
-              <option value="canceled">Canceled</option>
-            </select>
-          </div>
-        </div>
-        
-        <Button 
-          onClick={() => setShowNewPOForm(true)}
-          className="bg-coupa-blue hover:bg-coupa-darkblue text-white flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" /> 
-          New Purchase Order
+  const handleEditPO = (po: PurchaseOrder) => {
+    setEditingPO(po);
+    setFormValues(po);
+    setDialogOpen(true);
+  };
+
+  const handleDeletePO = (po: PurchaseOrder) => {
+    if (window.confirm(`Are you sure you want to delete ${po.id}?`)) {
+      deletePurchaseOrder(po.id);
+      toast({
+        title: "Purchase Order Deleted",
+        description: `${po.id} has been removed.`,
+      });
+    }
+  };
+
+  const handleSubmit = () => {
+    const poData = {
+      title: formValues.title || '',
+      vendor: formValues.vendor || '',
+      vendorId: formValues.vendorId || '',
+      status: formValues.status || 'draft',
+      totalAmount: Number(formValues.totalAmount) || 0,
+      currency: formValues.currency || 'USD',
+      expectedDelivery: formValues.expectedDelivery || '',
+      requestor: formValues.requestor || '',
+      department: formValues.department || '',
+      priority: formValues.priority || 'medium',
+      approvalStatus: 'not_required' as const,
+      lineItems: [],
+      notes: formValues.notes || ''
+    };
+
+    if (editingPO) {
+      updatePurchaseOrder(editingPO.id, poData);
+      toast({
+        title: "Purchase Order Updated",
+        description: `${formValues.title} has been updated successfully.`,
+      });
+    } else {
+      addPurchaseOrder(poData);
+      toast({
+        title: "Purchase Order Created",
+        description: `${formValues.title} has been created successfully.`,
+      });
+    }
+    setDialogOpen(false);
+  };
+
+  const handleImport = (importedData: PurchaseOrder[]) => {
+    importedData.forEach(po => {
+      const poWithDefaults = {
+        title: po.title || '',
+        vendor: po.vendor || '',
+        vendorId: po.vendorId || '',
+        status: po.status || 'draft',
+        totalAmount: po.totalAmount || 0,
+        currency: po.currency || 'USD',
+        expectedDelivery: po.expectedDelivery || '',
+        requestor: po.requestor || '',
+        department: po.department || '',
+        priority: po.priority || 'medium',
+        approvalStatus: 'not_required' as const,
+        lineItems: po.lineItems || [],
+        notes: po.notes || ''
+      };
+      addPurchaseOrder(poWithDefaults);
+    });
+  };
+
+  const getStatusBadge = (status: PurchaseOrder['status']) => {
+    const colors = {
+      draft: 'bg-gray-50 text-gray-700 border-gray-200',
+      pending: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+      approved: 'bg-green-50 text-green-700 border-green-200',
+      sent: 'bg-blue-50 text-blue-700 border-blue-200',
+      received: 'bg-purple-50 text-purple-700 border-purple-200',
+      completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      canceled: 'bg-red-50 text-red-700 border-red-200'
+    };
+    
+    return (
+      <Badge variant="outline" className={colors[status]}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    );
+  };
+
+  const getPriorityBadge = (priority: PurchaseOrder['priority']) => {
+    const colors = {
+      low: 'bg-gray-50 text-gray-700 border-gray-200',
+      medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+      high: 'bg-orange-50 text-orange-700 border-orange-200',
+      urgent: 'bg-red-50 text-red-700 border-red-200'
+    };
+    
+    return (
+      <Badge variant="outline" className={colors[priority]}>
+        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+      </Badge>
+    );
+  };
+
+  const renderActions = (po: PurchaseOrder) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <MoreVertical className="h-4 w-4" />
         </Button>
-      </div>
-      
-      {showNewPOForm ? (
-        <Card className="p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Create New Purchase Order</h2>
-          
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-                placeholder="Enter PO title"
-              />
-            </div>
-            <VoiceElement
-              whatScript={voiceScripts.purchaseOrders.vendorSelect.what}
-              howScript={voiceScripts.purchaseOrders.vendorSelect.how}
-              decisionScript={voiceScripts.purchaseOrders.vendorSelect.decision}
-            >
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent">
-                  <option value="">Select a vendor</option>
-                  {suppliers.map((supplier) => (
-                    <option key={supplier.id} value={supplier.id}>
-                      {supplier.name} (Rating: {supplier.rating}/5)
-                    </option>
-                  ))}
-                </select>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <Eye className="h-4 w-4 mr-2" />
+          View Details
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleEditPO(po)}>
+          <Edit className="h-4 w-4 mr-2" />
+          Edit
+        </DropdownMenuItem>
+        {po.status === 'approved' && (
+          <DropdownMenuItem>
+            <Send className="h-4 w-4 mr-2" />
+            Send to Supplier
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem 
+          onClick={() => handleDeletePO(po)}
+          className="text-red-600"
+        >
+          <Trash className="h-4 w-4 mr-2" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  return (
+    <ApplicationLayout pageTitle="Purchase Orders">
+      <div className="space-y-6">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-500">Total POs</p>
+                <p className="text-3xl font-bold">{totalCount}</p>
+                <p className="text-sm text-blue-600">{filteredCount} filtered</p>
               </div>
-            </VoiceElement>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expected Delivery</label>
-              <input
-                type="date"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Requisition</label>
-              <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-coupa-blue focus:border-transparent">
-                <option value="">Select a requisition (optional)</option>
-                <option value="REQ-2023-001">REQ-2023-001 - Office Supplies for Q2</option>
-                <option value="REQ-2023-002">REQ-2023-002 - Laptops for IT Department</option>
-              </select>
-            </div>
-          </div>
-          
-          <h3 className="font-medium text-gray-800 mb-3">Line Items</h3>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Item</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Unit Price</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Category</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="px-3 py-2">
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-coupa-blue focus:border-transparent"
-                    placeholder="Item name"
-                  />
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-coupa-blue focus:border-transparent"
-                    placeholder="Description"
-                  />
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <input
-                    type="number"
-                    className="w-20 border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-coupa-blue focus:border-transparent"
-                    placeholder="0"
-                  />
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <input
-                    type="number"
-                    className="w-24 border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-coupa-blue focus:border-transparent"
-                    placeholder="0.00"
-                  />
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <span className="text-gray-600">$0.00</span>
-                </TableCell>
-                <TableCell className="px-3 py-2">
-                  <select className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-coupa-blue focus:border-transparent">
-                    <option>Office Supplies</option>
-                    <option>IT Equipment</option>
-                    <option>Marketing</option>
-                    <option>Travel</option>
-                    <option>Other</option>
-                  </select>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell colSpan={6} className="text-center">
-                  <Button variant="outline" size="sm" className="mt-2">
-                    <Plus className="h-4 w-4 mr-1" /> Add Line Item
-                  </Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          
-          <div className="flex justify-end gap-3 mt-6">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowNewPOForm(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="outline">Save as Draft</Button>
-            <Button className="bg-coupa-blue hover:bg-coupa-darkblue">Send to Supplier</Button>
-          </div>
-        </Card>
-      ) : (
-        <Card className="mb-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>PO Number</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Supplier</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Expected Delivery</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {purchaseOrders.map((po) => (
-                <VoiceElement
-                  key={po.id}
-                  whatScript={voiceScripts.purchaseOrders.poRow.what}
-                  howScript={voiceScripts.purchaseOrders.poRow.how}
-                  decisionScript={voiceScripts.purchaseOrders.poRow.decision}
-                >
-                  <TableRow className="hover:bg-gray-50 cursor-pointer">
-                    <TableCell>
-                      <div className="flex items-center">
-                        <ShoppingCart className="h-4 w-4 text-gray-400 mr-2" />
-                        {po.id}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{po.title}</TableCell>
-                    <TableCell>
-                      <span 
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          po.status === 'completed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : po.status === 'sent' 
-                              ? 'bg-blue-100 text-blue-800' 
-                              : po.status === 'pending' 
-                                ? 'bg-yellow-100 text-yellow-800' 
-                                : po.status === 'canceled' 
-                                  ? 'bg-red-100 text-red-800' 
-                                  : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {po.status.charAt(0).toUpperCase() + po.status.slice(1)}
-                      </span>
-                    </TableCell>
-                    <TableCell>{po.supplier}</TableCell>
-                    <TableCell>{formatCurrency(po.totalAmount)}</TableCell>
-                    <TableCell className="text-gray-600">
-                      <div className="flex items-center text-sm">
-                        <Clock className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                        {po.dateCreated}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-600">{po.expectedDelivery}</TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm" className="text-coupa-blue">
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </VoiceElement>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      )}
-      
-      <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-        <div>Showing 1 of 1 purchase orders</div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>Previous</Button>
-          <span className="px-3 py-1 border rounded">1</span>
-          <Button variant="outline" size="sm" disabled>Next</Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-500">Pending Approval</p>
+                <p className="text-3xl font-bold text-yellow-600">{metrics.pending}</p>
+                <p className="text-sm text-yellow-600">Require attention</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-500">Approved</p>
+                <p className="text-3xl font-bold text-green-600">{metrics.approved}</p>
+                <p className="text-sm text-green-600">Ready to send</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-500">Total Value</p>
+                <p className="text-3xl font-bold">${metrics.totalValue.toLocaleString()}</p>
+                <p className="text-sm text-blue-600">All POs combined</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Main Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>Purchase Orders ({filteredCount} of {totalCount})</CardTitle>
+              <div className="flex gap-2">
+                <ImportExport
+                  data={allPurchaseOrders}
+                  onImport={handleImport}
+                  filename="purchase-orders"
+                  headers={{
+                    id: 'PO Number',
+                    title: 'Title',
+                    vendor: 'Vendor',
+                    vendorId: 'Vendor ID',
+                    status: 'Status',
+                    totalAmount: 'Total Amount',
+                    currency: 'Currency',
+                    dateCreated: 'Date Created',
+                    expectedDelivery: 'Expected Delivery',
+                    requestor: 'Requestor',
+                    department: 'Department',
+                    priority: 'Priority',
+                    notes: 'Notes'
+                  }}
+                />
+                <Button onClick={handleAddPO}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create PO
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              data={purchaseOrders}
+              columns={columns}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+              actions={renderActions}
+            />
+          </CardContent>
+        </Card>
+
+        <FormDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          title={editingPO ? 'Edit Purchase Order' : 'Create New Purchase Order'}
+          fields={formFields}
+          values={formValues}
+          onValuesChange={setFormValues}
+          onSubmit={handleSubmit}
+          submitText={editingPO ? 'Update' : 'Create'}
+        />
       </div>
     </ApplicationLayout>
   );
