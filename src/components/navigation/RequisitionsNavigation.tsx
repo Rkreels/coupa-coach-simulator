@@ -8,39 +8,9 @@ export const RequisitionsNavigation: React.FC = () => {
   
   const navigationItems = [
     {
-      name: 'Create Requisition',
+      name: 'All Requisitions',
       path: '/requisitions',
-      description: 'Create a new requisition'
-    },
-    {
-      name: 'My Requisitions',
-      path: '/requisitions/my',
-      description: 'View your requisitions'
-    },
-    {
-      name: 'Pending Approval',
-      path: '/requisitions/pending',
-      description: 'Requisitions awaiting approval'
-    },
-    {
-      name: 'Approved',
-      path: '/requisitions/approved',
-      description: 'Approved requisitions'
-    },
-    {
-      name: 'Templates',
-      path: '/requisitions/templates',
-      description: 'Requisition templates'
-    },
-    {
-      name: 'Shopping',
-      path: '/requisitions/shopping',
-      description: 'Browse shopping catalogs'
-    },
-    {
-      name: 'Quick Order',
-      path: '/requisitions/quick-order',
-      description: 'Quick order form'
+      description: 'View all requisitions'
     }
   ];
 
