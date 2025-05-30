@@ -26,6 +26,8 @@ import Activity from "./pages/Activity";
 import Notifications from "./pages/Notifications";
 import Suppliers from "./pages/Suppliers";
 import Contracts from "./pages/Contracts";
+import MyTasks from "./pages/MyTasks";
+import QuickActions from "./pages/QuickActions";
 import { VoiceTutorialProvider } from "./contexts/VoiceTutorialContext";
 import { VoiceTutorialControls } from "./components/VoiceTutorialControls";
 
@@ -46,9 +48,30 @@ const getModuleNavigation = (path: string) => {
       ],
       showNavigation: true
     },
+    "tasks": {
+      items: [
+        { name: "Dashboard", path: "/", description: "Main dashboard overview" },
+        { name: "Recent Activity", path: "/activity", description: "View recent system activity" },
+        { name: "Notifications", path: "/notifications", description: "Check notifications and alerts" },
+        { name: "My Tasks", path: "/tasks", description: "Personal task management" },
+        { name: "Quick Actions", path: "/quick-actions", description: "Frequently used actions" }
+      ],
+      showNavigation: true
+    },
+    "quick-actions": {
+      items: [
+        { name: "Dashboard", path: "/", description: "Main dashboard overview" },
+        { name: "Recent Activity", path: "/activity", description: "View recent system activity" },
+        { name: "Notifications", path: "/notifications", description: "Check notifications and alerts" },
+        { name: "My Tasks", path: "/tasks", description: "Personal task management" },
+        { name: "Quick Actions", path: "/quick-actions", description: "Frequently used actions" }
+      ],
+      showNavigation: true
+    },
     "requisitions": {
       items: [
-        { name: "Create Requisition", path: "/requisitions", description: "Create new requisition" },
+        { name: "All Requisitions", path: "/requisitions", description: "View all requisitions" },
+        { name: "Create Requisition", path: "/requisitions/create", description: "Create new requisition" },
         { name: "My Requisitions", path: "/requisitions/my", description: "View your requisitions" },
         { name: "Pending Approval", path: "/requisitions/pending", description: "Requisitions awaiting approval" },
         { name: "Approved", path: "/requisitions/approved", description: "Approved requisitions" },
@@ -247,6 +270,8 @@ const App = () => (
             <AppLayout>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/tasks" element={<MyTasks />} />
+                <Route path="/quick-actions" element={<QuickActions />} />
                 <Route path="/orders" element={<PurchaseOrders />} />
                 <Route path="/orders/*" element={<PurchaseOrders />} />
                 <Route path="/requisitions" element={<Requisitions />} />

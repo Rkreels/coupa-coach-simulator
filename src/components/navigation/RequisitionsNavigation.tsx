@@ -1,16 +1,48 @@
 
 import React from 'react';
 import { SecondaryNavigation } from '../SecondaryNavigation';
-import { useLocation } from 'react-router-dom';
 
 export const RequisitionsNavigation: React.FC = () => {
-  const location = useLocation();
-  
   const navigationItems = [
     {
       name: 'All Requisitions',
       path: '/requisitions',
       description: 'View all requisitions'
+    },
+    {
+      name: 'Create Requisition',
+      path: '/requisitions/create',
+      description: 'Create new requisition'
+    },
+    {
+      name: 'My Requisitions',
+      path: '/requisitions/my',
+      description: 'View your requisitions'
+    },
+    {
+      name: 'Pending Approval',
+      path: '/requisitions/pending',
+      description: 'Requisitions awaiting approval'
+    },
+    {
+      name: 'Approved',
+      path: '/requisitions/approved',
+      description: 'Approved requisitions'
+    },
+    {
+      name: 'Templates',
+      path: '/requisitions/templates',
+      description: 'Requisition templates'
+    },
+    {
+      name: 'Shopping',
+      path: '/requisitions/shopping',
+      description: 'Browse catalogs and shop'
+    },
+    {
+      name: 'Quick Order',
+      path: '/requisitions/quick-order',
+      description: 'Quick order entry'
     }
   ];
 
