@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ApplicationLayout } from '../ApplicationLayout';
@@ -100,7 +99,7 @@ export const ContractsModule: React.FC = () => {
                   <FileText className="h-5 w-5 text-blue-500" />
                   <div>
                     <p className="text-sm text-gray-500">Total Value</p>
-                    <p className="text-2xl font-bold">${(metrics.totalValue / 1000000).toFixed(1)}M</p>
+                    <p className="text-2xl font-bold">${((Number(metrics.totalValue) || 0) / 1000000).toFixed(1)}M</p>
                   </div>
                 </div>
               </CardContent>
