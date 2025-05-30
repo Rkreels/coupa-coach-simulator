@@ -280,6 +280,7 @@ const App = () => (
                 <Route path="/sourcing/*" element={<Auctions />} />
                 <Route path="/supply-chain/*" element={<SupplyChain />} />
                 <Route path="/analytics/*" element={<Analytics />} />
+                <Route path="/invoices" element={<Invoices />} />
                 <Route path="/invoices/*" element={<Invoices />} />
                 <Route path="/community/*" element={<Community />} />
                 <Route path="/payments/*" element={<Payments />} />
