@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,7 +90,7 @@ const RequisitionTemplateForm = ({ template, onSubmit, onCancel, isEditing }) =>
     
     const templateData = {
       ...formData,
-      createdBy: isEditing ? formData.createdBy : 'Current User'
+      createdBy: isEditing ? (template?.createdBy || 'Current User') : 'Current User'
     };
     
     onSubmit(templateData);

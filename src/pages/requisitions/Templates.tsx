@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,8 +96,8 @@ const TemplatesPage = () => {
     setDetailsOpen(true);
   };
 
-  const openEdit = (template) => {
-    setSelectedTemplate(template || null);
+  const openEdit = (template = null) => {
+    setSelectedTemplate(template);
     setIsEditing(!!template);
     setDialogOpen(true);
     if (template) setDetailsOpen(false);
