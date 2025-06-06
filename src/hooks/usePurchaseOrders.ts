@@ -14,6 +14,9 @@ export interface PurchaseOrder {
   dateModified: string;
   expectedDelivery: string;
   actualDelivery?: string;
+  sentDate?: string;
+  receivedDate?: string;
+  approvedDate?: string;
   requestor: string;
   department: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
@@ -21,6 +24,7 @@ export interface PurchaseOrder {
   lineItems: PurchaseOrderLineItem[];
   notes?: string;
   attachments?: string[];
+  deliveryStatus?: string;
 }
 
 export interface PurchaseOrderLineItem {
@@ -31,7 +35,7 @@ export interface PurchaseOrderLineItem {
   unitPrice: number;
   totalPrice: number;
   category: string;
-  uom: string; // unit of measure
+  uom: string;
   needByDate: string;
 }
 
@@ -47,6 +51,7 @@ const initialPurchaseOrders: PurchaseOrder[] = [
     dateCreated: '2024-05-15',
     dateModified: '2024-05-20',
     expectedDelivery: '2024-06-01',
+    approvedDate: '2024-05-20',
     requestor: 'John Smith',
     department: 'Operations',
     priority: 'medium',
@@ -77,6 +82,7 @@ const initialPurchaseOrders: PurchaseOrder[] = [
     dateCreated: '2024-05-20',
     dateModified: '2024-05-22',
     expectedDelivery: '2024-06-15',
+    sentDate: '2024-05-22',
     requestor: 'Jane Doe',
     department: 'IT',
     priority: 'high',
@@ -94,22 +100,81 @@ const initialPurchaseOrders: PurchaseOrder[] = [
         needByDate: '2024-06-15'
       }
     ]
+  },
+  {
+    id: 'PO-2024-003',
+    title: 'Marketing Materials',
+    vendor: 'Print Solutions Inc',
+    vendorId: 'VENDOR-003',
+    status: 'pending',
+    totalAmount: 850.00,
+    currency: 'USD',
+    dateCreated: '2024-05-25',
+    dateModified: '2024-05-25',
+    expectedDelivery: '2024-06-10',
+    requestor: 'Mike Wilson',
+    department: 'Marketing',
+    priority: 'medium',
+    approvalStatus: 'pending',
+    lineItems: [
+      {
+        id: 'LI-003',
+        itemName: 'Brochures',
+        description: 'Company brochures - 1000 units',
+        quantity: 1000,
+        unitPrice: 0.85,
+        totalPrice: 850.00,
+        category: 'Marketing',
+        uom: 'pieces',
+        needByDate: '2024-06-10'
+      }
+    ]
+  },
+  {
+    id: 'PO-2024-004',
+    title: 'Cleaning Supplies',
+    vendor: 'CleanCorp',
+    vendorId: 'VENDOR-004',
+    status: 'received',
+    totalAmount: 320.00,
+    currency: 'USD',
+    dateCreated: '2024-05-10',
+    dateModified: '2024-05-30',
+    expectedDelivery: '2024-05-28',
+    actualDelivery: '2024-05-28',
+    sentDate: '2024-05-15',
+    receivedDate: '2024-05-28',
+    approvedDate: '2024-05-12',
+    requestor: 'Sarah Davis',
+    department: 'Facilities',
+    priority: 'low',
+    approvalStatus: 'approved',
+    deliveryStatus: 'Complete',
+    lineItems: [
+      {
+        id: 'LI-004',
+        itemName: 'Cleaning Supplies Bundle',
+        description: 'Monthly cleaning supplies',
+        quantity: 1,
+        unitPrice: 320.00,
+        totalPrice: 320.00,
+        category: 'Facilities',
+        uom: 'set',
+        needByDate: '2024-05-28'
+      }
+    ]
   }
 ];
 
 export function usePurchaseOrders() {
   const [purchaseOrders, setPurchaseOrders] = useLocalStorage('purchaseOrders', initialPurchaseOrders);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState<Record<string, any>>({});
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof PurchaseOrder;
-    direction: 'asc' | 'desc';
-  } | null>(null);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [departmentFilter, setDepartmentFilter] = useState('all');
 
   const filteredData = useMemo(() => {
     let result = purchaseOrders;
 
-    // Apply search
     if (searchTerm) {
       result = result.filter((po) =>
         po.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -119,27 +184,16 @@ export function usePurchaseOrders() {
       );
     }
 
-    // Apply filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && value !== 'all') {
-        result = result.filter((po) => String(po[key as keyof PurchaseOrder]) === value);
-      }
-    });
+    if (statusFilter && statusFilter !== 'all') {
+      result = result.filter((po) => po.status === statusFilter);
+    }
 
-    // Apply sorting
-    if (sortConfig) {
-      result.sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
-        
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
+    if (departmentFilter && departmentFilter !== 'all') {
+      result = result.filter((po) => po.department === departmentFilter);
     }
 
     return result;
-  }, [purchaseOrders, searchTerm, filters, sortConfig]);
+  }, [purchaseOrders, searchTerm, statusFilter, departmentFilter]);
 
   const addPurchaseOrder = (po: Omit<PurchaseOrder, 'id' | 'dateCreated' | 'dateModified'>) => {
     const newPO = {
@@ -162,21 +216,43 @@ export function usePurchaseOrders() {
     setPurchaseOrders(purchaseOrders.filter(po => po.id !== id));
   };
 
-  const handleSort = (key: keyof PurchaseOrder) => {
-    setSortConfig(current => ({
-      key,
-      direction: current?.key === key && current.direction === 'asc' ? 'desc' : 'asc'
-    }));
+  const approvePurchaseOrder = (id: string) => {
+    updatePurchaseOrder(id, {
+      status: 'approved',
+      approvalStatus: 'approved',
+      approvedDate: new Date().toISOString().split('T')[0]
+    });
   };
 
-  const updateFilter = (key: string, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const rejectPurchaseOrder = (id: string) => {
+    updatePurchaseOrder(id, {
+      status: 'draft',
+      approvalStatus: 'rejected'
+    });
+  };
+
+  const sendPurchaseOrder = (id: string) => {
+    updatePurchaseOrder(id, {
+      status: 'sent',
+      sentDate: new Date().toISOString().split('T')[0]
+    });
+  };
+
+  const receivePurchaseOrder = (id: string) => {
+    updatePurchaseOrder(id, {
+      status: 'received',
+      receivedDate: new Date().toISOString().split('T')[0],
+      actualDelivery: new Date().toISOString().split('T')[0],
+      deliveryStatus: 'Complete'
+    });
   };
 
   const getMetrics = () => ({
     total: purchaseOrders.length,
     pending: purchaseOrders.filter(po => po.status === 'pending').length,
     approved: purchaseOrders.filter(po => po.status === 'approved').length,
+    sent: purchaseOrders.filter(po => po.status === 'sent').length,
+    received: purchaseOrders.filter(po => po.status === 'received').length,
     completed: purchaseOrders.filter(po => po.status === 'completed').length,
     totalValue: purchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0)
   });
@@ -186,13 +262,17 @@ export function usePurchaseOrders() {
     allPurchaseOrders: purchaseOrders,
     searchTerm,
     setSearchTerm,
-    filters,
-    updateFilter,
-    sortConfig,
-    handleSort,
+    statusFilter,
+    setStatusFilter,
+    departmentFilter,
+    setDepartmentFilter,
     addPurchaseOrder,
     updatePurchaseOrder,
     deletePurchaseOrder,
+    approvePurchaseOrder,
+    rejectPurchaseOrder,
+    sendPurchaseOrder,
+    receivePurchaseOrder,
     totalCount: purchaseOrders.length,
     filteredCount: filteredData.length,
     metrics: getMetrics()

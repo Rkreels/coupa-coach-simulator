@@ -106,6 +106,106 @@ const initialInvoices: Invoice[] = [
     attachments: [],
     submittedDate: '2024-01-10',
     lastModified: '2024-01-12'
+  },
+  {
+    id: 'INV-2024-003',
+    invoiceNumber: 'VEN-003-2024',
+    vendorName: 'CleanCorp',
+    vendorId: 'VEN-003',
+    department: 'Facilities',
+    status: 'paid',
+    priority: 'low',
+    invoiceDate: '2024-01-05',
+    dueDate: '2024-02-05',
+    totalAmount: 352.00,
+    currency: 'USD',
+    taxAmount: 32.00,
+    netAmount: 320.00,
+    purchaseOrderId: 'PO-2024-004',
+    description: 'Monthly cleaning services',
+    approver: 'Jane Wilson',
+    approvedDate: '2024-01-08',
+    paidDate: '2024-01-30',
+    paymentMethod: 'Bank Transfer',
+    lineItems: [
+      {
+        id: 'LI-003',
+        description: 'Cleaning Services',
+        quantity: 1,
+        unitPrice: 320.00,
+        totalPrice: 320.00,
+        category: 'Services',
+        accountCode: '6003',
+        taxRate: 0.1
+      }
+    ],
+    attachments: [],
+    submittedDate: '2024-01-05',
+    lastModified: '2024-01-30'
+  },
+  {
+    id: 'INV-2024-004',
+    invoiceNumber: 'VEN-004-2024',
+    vendorName: 'Print Solutions Inc',
+    vendorId: 'VEN-004',
+    department: 'Marketing',
+    status: 'processing',
+    priority: 'medium',
+    invoiceDate: '2024-01-20',
+    dueDate: '2024-02-20',
+    totalAmount: 935.00,
+    currency: 'USD',
+    taxAmount: 85.00,
+    netAmount: 850.00,
+    purchaseOrderId: 'PO-2024-003',
+    description: 'Marketing brochures and materials',
+    lineItems: [
+      {
+        id: 'LI-004',
+        description: 'Marketing Brochures',
+        quantity: 1000,
+        unitPrice: 0.85,
+        totalPrice: 850.00,
+        category: 'Marketing',
+        accountCode: '6004',
+        taxRate: 0.1
+      }
+    ],
+    attachments: [],
+    submittedDate: '2024-01-20',
+    lastModified: '2024-01-20'
+  },
+  {
+    id: 'INV-2024-005',
+    invoiceNumber: 'VEN-005-2024',
+    vendorName: 'TechSupport Pro',
+    vendorId: 'VEN-005',
+    department: 'IT',
+    status: 'disputed',
+    priority: 'high',
+    invoiceDate: '2024-01-18',
+    dueDate: '2024-02-18',
+    totalAmount: 5500.00,
+    currency: 'USD',
+    taxAmount: 500.00,
+    netAmount: 5000.00,
+    description: 'Technical support services',
+    notes: 'Disputed - service quality issues',
+    lineItems: [
+      {
+        id: 'LI-005',
+        description: 'Technical Support',
+        quantity: 40,
+        unitPrice: 125.00,
+        totalPrice: 5000.00,
+        category: 'Services',
+        accountCode: '6005',
+        taxRate: 0.1
+      }
+    ],
+    attachments: [],
+    submittedDate: '2024-01-18',
+    lastModified: '2024-01-25'
   }
 ];
 

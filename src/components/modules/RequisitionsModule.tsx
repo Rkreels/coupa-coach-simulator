@@ -1,202 +1,165 @@
 
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ApplicationLayout } from '../ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/data-table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useRequisitions, Requisition } from '../../hooks/useRequisitions';
-import { RequisitionForm } from '../forms/RequisitionForm';
-import { RequisitionDetailsView } from '../views/RequisitionDetailsView';
-import { useToast } from '@/hooks/use-toast';
-import { Plus, FileText, Search, Clock, CheckCircle, Filter, Eye, Edit, Trash2, AlertTriangle } from 'lucide-react';
+import { useRequisitions } from '../../hooks/useRequisitions';
+import { Plus, Search, Eye, Edit, FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
-export const RequisitionsModule: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
+export const RequisitionsModule = () => {
   const {
     requisitions,
-    allRequisitions,
     searchTerm,
     setSearchTerm,
     statusFilter,
     setStatusFilter,
-    priorityFilter,
-    setPriorityFilter,
-    addRequisition,
-    updateRequisition,
-    deleteRequisition,
-    getRequisition,
     getMetrics
   } = useRequisitions();
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [selectedRequisition, setSelectedRequisition] = useState<Requisition | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-
   const metrics = getMetrics();
 
-  const handleCreateRequisition = (data: Partial<Requisition>, action: 'save' | 'submit') => {
-    const requisitionData = {
-      ...data,
-      requestor: 'Current User',
-      status: action === 'save' ? 'draft' as const : 'pending' as const,
-      requestedDate: new Date().toISOString().split('T')[0],
-      submittedDate: action === 'submit' ? new Date().toISOString().split('T')[0] : undefined
+  const getStatusBadge = (status: string) => {
+    const colors = {
+      draft: 'bg-gray-100 text-gray-800',
+      pending: 'bg-yellow-100 text-yellow-800',
+      approved: 'bg-green-100 text-green-800',
+      rejected: 'bg-red-100 text-red-800'
     };
-
-    const newReq = addRequisition(requisitionData as Omit<Requisition, 'id' | 'lastModified'>);
-    setDialogOpen(false);
     
-    toast({
-      title: action === 'save' ? 'Requisition Saved' : 'Requisition Submitted',
-      description: `Requisition ${newReq.id} has been ${action === 'save' ? 'saved as draft' : 'submitted for approval'}.`
-    });
+    return (
+      <Badge className={colors[status] || 'bg-gray-100 text-gray-800'}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </Badge>
+    );
   };
 
-  const handleUpdateRequisition = (data: Partial<Requisition>, action: 'save' | 'submit') => {
-    if (!selectedRequisition) return;
-    
-    const updates = {
-      ...data,
-      status: action === 'save' ? 'draft' as const : 'pending' as const,
-      submittedDate: action === 'submit' ? new Date().toISOString().split('T')[0] : selectedRequisition.submittedDate
-    };
-
-    updateRequisition(selectedRequisition.id, updates);
-    setDialogOpen(false);
-    setDetailsOpen(false);
-    setSelectedRequisition(null);
-    setIsEditing(false);
-    
-    toast({
-      title: action === 'save' ? 'Requisition Updated' : 'Requisition Resubmitted',
-      description: `Requisition ${selectedRequisition.id} has been updated.`
-    });
-  };
-
-  const handleDeleteRequisition = (requisition: Requisition) => {
-    deleteRequisition(requisition.id);
-    setDetailsOpen(false);
-    setSelectedRequisition(null);
-    
-    toast({
-      title: 'Requisition Deleted',
-      description: `Requisition ${requisition.id} has been deleted.`,
-      variant: 'destructive'
-    });
-  };
-
-  const handleApproveRequisition = (requisition: Requisition) => {
-    updateRequisition(requisition.id, {
-      status: 'approved',
-      approver: 'Current User',
-      approvedDate: new Date().toISOString().split('T')[0]
-    });
-    
-    toast({
-      title: 'Requisition Approved',
-      description: `Requisition ${requisition.id} has been approved.`
-    });
-  };
-
-  const handleRejectRequisition = (requisition: Requisition) => {
-    updateRequisition(requisition.id, {
-      status: 'rejected',
-      approver: 'Current User',
-      approvedDate: new Date().toISOString().split('T')[0]
-    });
-    
-    toast({
-      title: 'Requisition Rejected',
-      description: `Requisition ${requisition.id} has been rejected.`,
-      variant: 'destructive'
-    });
-  };
-
-  const openDetails = (requisition: Requisition) => {
-    setSelectedRequisition(requisition);
-    setDetailsOpen(true);
-  };
-
-  const openEdit = (requisition?: Requisition) => {
-    setSelectedRequisition(requisition || null);
-    setIsEditing(!!requisition);
-    setDialogOpen(true);
-    if (requisition) setDetailsOpen(false);
-  };
+  const columns = [
+    { 
+      key: 'id' as const, 
+      header: 'Req ID', 
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4 text-gray-400" />
+          <span className="font-mono text-sm">{value}</span>
+        </div>
+      )
+    },
+    { key: 'title' as const, header: 'Title', sortable: true },
+    { key: 'requestor' as const, header: 'Requestor', sortable: true },
+    { key: 'department' as const, header: 'Department', sortable: true },
+    { 
+      key: 'status' as const, 
+      header: 'Status', 
+      render: (value: string) => getStatusBadge(value)
+    },
+    { 
+      key: 'priority' as const, 
+      header: 'Priority',
+      render: (value: string) => (
+        <Badge className={
+          value === 'urgent' ? 'bg-red-100 text-red-800' :
+          value === 'high' ? 'bg-orange-100 text-orange-800' :
+          value === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+          'bg-green-100 text-green-800'
+        }>
+          {value.charAt(0).toUpperCase() + value.slice(1)}
+        </Badge>
+      )
+    },
+    { 
+      key: 'totalAmount' as const, 
+      header: 'Amount',
+      render: (value: number, item: any) => `${item.currency} ${value.toLocaleString()}`
+    },
+    { key: 'neededByDate' as const, header: 'Needed By', sortable: true }
+  ];
 
   return (
     <ApplicationLayout pageTitle="Requisitions">
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">All Requisitions</h2>
-          <Button onClick={() => openEdit()}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Requisition
-          </Button>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-2xl font-bold">Requisition Management</h2>
+          <div className="flex gap-2">
+            <Link to="/requisitions/templates">
+              <Button variant="outline">
+                <FileText className="h-4 w-4 mr-2" />
+                Templates
+              </Button>
+            </Link>
+            <Link to="/requisitions/create">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Requisition
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5 text-blue-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-2xl font-bold">{metrics.totalRequisitions}</p>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link to="/requisitions/my">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="text-sm text-gray-500">My Requisitions</p>
+                    <p className="text-lg font-semibold">View & Manage</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-yellow-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Pending</p>
-                  <p className="text-2xl font-bold">{metrics.pendingApproval}</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/requisitions/pending">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-5 w-5 text-yellow-500" />
+                  <div>
+                    <p className="text-sm text-gray-500">Pending Approval</p>
+                    <p className="text-lg font-semibold">{metrics.pendingApproval}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Approved</p>
-                  <p className="text-2xl font-bold">{metrics.approved}</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/requisitions/approved">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="text-sm text-gray-500">Approved</p>
+                    <p className="text-lg font-semibold">{metrics.approved}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Drafts</p>
-                  <p className="text-2xl font-bold">{metrics.drafted}</p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link to="/requisitions/shopping">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="h-5 w-5 text-purple-500" />
+                  <div>
+                    <p className="text-sm text-gray-500">Shopping Catalog</p>
+                    <p className="text-lg font-semibold">Browse Items</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Filters */}
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex-1 min-w-64">
+            <div className="flex gap-4 items-center">
+              <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -207,183 +170,37 @@ export const RequisitionsModule: React.FC = () => {
                   />
                 </div>
               </div>
-              
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Priority</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                More Filters
-              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Requisitions Table */}
+        {/* Recent Requisitions */}
         <Card>
-          <CardContent className="p-0">
+          <CardHeader>
+            <CardTitle>Recent Requisitions</CardTitle>
+          </CardHeader>
+          <CardContent>
             <DataTable
-              data={requisitions}
-              columns={[
-                { 
-                  key: 'id', 
-                  header: 'Req ID', 
-                  sortable: true,
-                  render: (value: string) => (
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-400" />
-                      <span className="font-mono text-sm">{value}</span>
-                    </div>
-                  )
-                },
-                { key: 'title', header: 'Title', sortable: true },
-                { 
-                  key: 'status', 
-                  header: 'Status',
-                  render: (value: string) => (
-                    <Badge className={
-                      value === 'approved' ? 'bg-green-100 text-green-800' :
-                      value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      value === 'draft' ? 'bg-gray-100 text-gray-800' :
-                      'bg-red-100 text-red-800'
-                    }>
-                      {value.charAt(0).toUpperCase() + value.slice(1)}
-                    </Badge>
-                  )
-                },
-                { 
-                  key: 'priority', 
-                  header: 'Priority',
-                  render: (value: string) => (
-                    <Badge className={
-                      value === 'urgent' ? 'bg-red-100 text-red-800' :
-                      value === 'high' ? 'bg-orange-100 text-orange-800' :
-                      value === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }>
-                      {value.charAt(0).toUpperCase() + value.slice(1)}
-                    </Badge>
-                  )
-                },
-                { key: 'requestor', header: 'Requestor', sortable: true },
-                { key: 'department', header: 'Department', sortable: true },
-                { 
-                  key: 'totalAmount', 
-                  header: 'Amount',
-                  render: (value: number, item: Requisition) => `${item.currency} ${value.toLocaleString()}`
-                },
-                { 
-                  key: 'neededByDate', 
-                  header: 'Needed By',
-                  render: (value: string) => new Date(value).toLocaleDateString()
-                }
-              ]}
+              data={requisitions.slice(0, 10)}
+              columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              onRowClick={openDetails}
-              actions={(item: Requisition) => (
+              actions={(item) => (
                 <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openDetails(item);
-                    }}
-                  >
+                  <Button variant="ghost" size="sm">
                     <Eye className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEdit(item);
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteRequisition(item);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {(item.status === 'draft' || item.status === 'rejected') && (
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               )}
             />
           </CardContent>
         </Card>
       </div>
-
-      {/* Create/Edit Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {isEditing ? 'Edit Requisition' : 'Create New Requisition'}
-            </DialogTitle>
-          </DialogHeader>
-          <RequisitionForm
-            requisition={selectedRequisition || undefined}
-            onSubmit={isEditing ? handleUpdateRequisition : handleCreateRequisition}
-            onCancel={() => {
-              setDialogOpen(false);
-              setSelectedRequisition(null);
-              setIsEditing(false);
-            }}
-            isEditing={isEditing}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Details Dialog */}
-      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Requisition Details</DialogTitle>
-          </DialogHeader>
-          {selectedRequisition && (
-            <RequisitionDetailsView
-              requisition={selectedRequisition}
-              onEdit={() => openEdit(selectedRequisition)}
-              onDelete={() => handleDeleteRequisition(selectedRequisition)}
-              onApprove={() => handleApproveRequisition(selectedRequisition)}
-              onReject={() => handleRejectRequisition(selectedRequisition)}
-              canEdit={selectedRequisition.status === 'draft' || selectedRequisition.status === 'rejected'}
-              canApprove={selectedRequisition.status === 'pending'}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </ApplicationLayout>
   );
 };

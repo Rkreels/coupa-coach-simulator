@@ -6,18 +6,29 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
+import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 
 const PendingOrdersPage = () => {
-  const { purchaseOrders } = usePurchaseOrders();
+  const { toast } = useToast();
+  const { purchaseOrders, approvePurchaseOrder, rejectPurchaseOrder } = usePurchaseOrders();
   const pendingOrders = purchaseOrders.filter(order => order.status === 'pending');
 
   const handleApprove = (orderId: string) => {
-    console.log(`Approving order ${orderId}`);
+    approvePurchaseOrder(orderId);
+    toast({
+      title: 'Order Approved',
+      description: `Purchase order ${orderId} has been approved.`
+    });
   };
 
   const handleReject = (orderId: string) => {
-    console.log(`Rejecting order ${orderId}`);
+    rejectPurchaseOrder(orderId);
+    toast({
+      title: 'Order Rejected',
+      description: `Purchase order ${orderId} has been rejected.`,
+      variant: 'destructive'
+    });
   };
 
   const columns = [

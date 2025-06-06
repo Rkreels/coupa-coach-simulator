@@ -6,11 +6,21 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
+import { useToast } from '@/hooks/use-toast';
 import { Send, Eye, Download } from 'lucide-react';
 
 const ApprovedOrdersPage = () => {
-  const { purchaseOrders } = usePurchaseOrders();
+  const { toast } = useToast();
+  const { purchaseOrders, sendPurchaseOrder } = usePurchaseOrders();
   const approvedOrders = purchaseOrders.filter(order => order.status === 'approved');
+
+  const handleSend = (order) => {
+    sendPurchaseOrder(order.id);
+    toast({
+      title: 'Order Sent',
+      description: `Purchase order ${order.id} has been sent to ${order.vendor}.`
+    });
+  };
 
   const columns = [
     { key: 'id' as const, header: 'Order ID', sortable: true },
@@ -51,7 +61,12 @@ const ApprovedOrdersPage = () => {
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleSend(item)}
+                    className="text-blue-600"
+                  >
                     <Send className="h-4 w-4 mr-1" />
                     Send
                   </Button>

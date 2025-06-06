@@ -6,11 +6,21 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
+import { useToast } from '@/hooks/use-toast';
 import { Package, Eye, Download, Truck } from 'lucide-react';
 
 const SentOrdersPage = () => {
-  const { purchaseOrders } = usePurchaseOrders();
+  const { toast } = useToast();
+  const { purchaseOrders, receivePurchaseOrder } = usePurchaseOrders();
   const sentOrders = purchaseOrders.filter(order => order.status === 'sent');
+
+  const handleReceive = (order) => {
+    receivePurchaseOrder(order.id);
+    toast({
+      title: 'Order Received',
+      description: `Purchase order ${order.id} has been marked as received.`
+    });
+  };
 
   const columns = [
     { key: 'id', header: 'Order ID', sortable: true },
@@ -52,7 +62,12 @@ const SentOrdersPage = () => {
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm" className="text-green-600">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-green-600"
+                    onClick={() => handleReceive(item)}
+                  >
                     <Package className="h-4 w-4 mr-1" />
                     Receive
                   </Button>
