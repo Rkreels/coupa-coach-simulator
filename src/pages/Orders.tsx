@@ -5,6 +5,8 @@ import AllOrdersPage from './orders/AllOrders';
 import CreateOrderPage from './orders/CreateOrder';
 import PendingOrdersPage from './orders/PendingOrders';
 import ApprovedOrdersPage from './orders/ApprovedOrders';
+import SentOrdersPage from './orders/SentOrders';
+import ReceivedOrdersPage from './orders/ReceivedOrders';
 import { ModulePage } from '../components/ModulePage';
 
 const OrdersPage = () => {
@@ -14,7 +16,8 @@ const OrdersPage = () => {
       <Route path="/create" element={<CreateOrderPage />} />
       <Route path="/pending" element={<PendingOrdersPage />} />
       <Route path="/approved" element={<ApprovedOrdersPage />} />
-      <Route path="/sent" element={<ModulePage moduleName="Orders" pageTitle="Sent Orders" />} />
+      <Route path="/sent" element={<SentOrdersPage />} />
+      <Route path="/received" element={<ReceivedOrdersPage />} />
       <Route path="/receipts" element={<ModulePage moduleName="Orders" pageTitle="Order Receipts" />} />
       <Route path="/returns" element={<ModulePage moduleName="Orders" pageTitle="Returns" />} />
       <Route path="/lines" element={<ModulePage moduleName="Orders" pageTitle="Order Lines" />} />

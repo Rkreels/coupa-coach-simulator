@@ -5,24 +5,28 @@ import { useLocalStorage } from './useLocalStorage';
 export interface Invoice {
   id: string;
   invoiceNumber: string;
-  vendor: string;
+  vendorName: string;
   vendorId: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'approved' | 'processing' | 'paid' | 'dispute' | 'rejected';
+  department: string;
+  status: 'pending' | 'processing' | 'approved' | 'paid' | 'disputed' | 'rejected';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
   invoiceDate: string;
   dueDate: string;
+  totalAmount: number;
+  currency: string;
+  taxAmount: number;
+  netAmount: number;
+  purchaseOrderId?: string;
   description: string;
-  poNumber?: string;
-  department: string;
+  lineItems: InvoiceLineItem[];
   approver?: string;
   approvedDate?: string;
   paidDate?: string;
-  disputeReason?: string;
-  lineItems: InvoiceLineItem[];
+  paymentMethod?: string;
   attachments: string[];
-  dateCreated: string;
-  dateModified: string;
+  submittedDate: string;
+  lastModified: string;
+  notes?: string;
 }
 
 export interface InvoiceLineItem {
@@ -31,63 +35,77 @@ export interface InvoiceLineItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  poLineId?: string;
+  category: string;
+  accountCode?: string;
+  taxRate: number;
 }
 
 const initialInvoices: Invoice[] = [
   {
     id: 'INV-2024-001',
-    invoiceNumber: 'VND-001-2024',
-    vendor: 'Office Depot',
-    vendorId: 'VND-001',
-    amount: 2500,
-    currency: 'USD',
-    status: 'pending',
-    invoiceDate: '2024-01-15',
-    dueDate: '2024-02-14',
-    description: 'Office supplies Q1',
-    poNumber: 'PO-2024-001',
+    invoiceNumber: 'VEN-001-2024',
+    vendorName: 'Office Supplies Co.',
+    vendorId: 'VEN-001',
     department: 'Marketing',
+    status: 'pending',
+    priority: 'medium',
+    invoiceDate: '2024-01-15',
+    dueDate: '2024-02-15',
+    totalAmount: 2750.00,
+    currency: 'USD',
+    taxAmount: 250.00,
+    netAmount: 2500.00,
+    purchaseOrderId: 'PO-2024-001',
+    description: 'Office supplies for Q1 2024',
     lineItems: [
       {
-        id: 'IL-001',
-        description: 'Printer Paper',
+        id: 'LI-001',
+        description: 'Printer Paper (A4)',
         quantity: 20,
         unitPrice: 12.50,
-        totalPrice: 250
+        totalPrice: 250.00,
+        category: 'Office Supplies',
+        accountCode: '6001',
+        taxRate: 0.1
       }
     ],
     attachments: [],
-    dateCreated: '2024-01-15',
-    dateModified: '2024-01-15'
+    submittedDate: '2024-01-15',
+    lastModified: '2024-01-15'
   },
   {
     id: 'INV-2024-002',
-    invoiceNumber: 'DELL-002-2024',
-    vendor: 'Dell Technologies',
-    vendorId: 'VND-002',
-    amount: 15000,
-    currency: 'USD',
-    status: 'approved',
-    invoiceDate: '2024-01-10',
-    dueDate: '2024-02-09',
-    description: 'IT equipment refresh',
-    poNumber: 'PO-2024-002',
+    invoiceNumber: 'VEN-002-2024',
+    vendorName: 'Dell Technologies',
+    vendorId: 'VEN-002',
     department: 'IT',
+    status: 'approved',
+    priority: 'high',
+    invoiceDate: '2024-01-10',
+    dueDate: '2024-02-10',
+    totalAmount: 16500.00,
+    currency: 'USD',
+    taxAmount: 1500.00,
+    netAmount: 15000.00,
+    purchaseOrderId: 'PO-2024-002',
+    description: 'IT equipment purchase',
     approver: 'John Smith',
     approvedDate: '2024-01-12',
     lineItems: [
       {
-        id: 'IL-002',
+        id: 'LI-002',
         description: 'Dell XPS 15 Laptop',
         quantity: 5,
-        unitPrice: 2500,
-        totalPrice: 12500
+        unitPrice: 2500.00,
+        totalPrice: 12500.00,
+        category: 'IT Equipment',
+        accountCode: '6002',
+        taxRate: 0.1
       }
     ],
     attachments: [],
-    dateCreated: '2024-01-10',
-    dateModified: '2024-01-12'
+    submittedDate: '2024-01-10',
+    lastModified: '2024-01-12'
   }
 ];
 
@@ -95,22 +113,23 @@ export const useInvoices = () => {
   const [invoices, setInvoices] = useLocalStorage('invoices', initialInvoices);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
 
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         invoice.vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          invoice.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || invoice.priority === priorityFilter;
     
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const addInvoice = (invoice: Omit<Invoice, 'id' | 'dateCreated' | 'dateModified'>) => {
+  const addInvoice = (invoice: Omit<Invoice, 'id' | 'lastModified'>) => {
     const newInvoice: Invoice = {
       ...invoice,
       id: `INV-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`,
-      dateCreated: new Date().toISOString().split('T')[0],
-      dateModified: new Date().toISOString().split('T')[0]
+      lastModified: new Date().toISOString().split('T')[0]
     };
     setInvoices([...invoices, newInvoice]);
     return newInvoice;
@@ -119,7 +138,7 @@ export const useInvoices = () => {
   const updateInvoice = (id: string, updates: Partial<Invoice>) => {
     setInvoices(invoices.map(invoice => 
       invoice.id === id 
-        ? { ...invoice, ...updates, dateModified: new Date().toISOString().split('T')[0] }
+        ? { ...invoice, ...updates, lastModified: new Date().toISOString().split('T')[0] }
         : invoice
     ));
   };
@@ -128,19 +147,52 @@ export const useInvoices = () => {
     setInvoices(invoices.filter(invoice => invoice.id !== id));
   };
 
+  const getInvoice = (id: string) => {
+    return invoices.find(invoice => invoice.id === id);
+  };
+
+  const approveInvoice = (id: string, approver: string) => {
+    updateInvoice(id, {
+      status: 'approved',
+      approver,
+      approvedDate: new Date().toISOString().split('T')[0]
+    });
+  };
+
+  const rejectInvoice = (id: string, reason?: string) => {
+    updateInvoice(id, {
+      status: 'rejected',
+      notes: reason || 'Invoice rejected'
+    });
+  };
+
+  const payInvoice = (id: string, paymentMethod: string) => {
+    updateInvoice(id, {
+      status: 'paid',
+      paymentMethod,
+      paidDate: new Date().toISOString().split('T')[0]
+    });
+  };
+
   const getMetrics = () => {
     const totalInvoices = invoices.length;
-    const pending = invoices.filter(i => i.status === 'pending').length;
+    const pendingApproval = invoices.filter(i => i.status === 'pending').length;
+    const processing = invoices.filter(i => i.status === 'processing').length;
     const approved = invoices.filter(i => i.status === 'approved').length;
     const paid = invoices.filter(i => i.status === 'paid').length;
-    const totalAmount = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+    const disputed = invoices.filter(i => i.status === 'disputed').length;
+    const totalValue = invoices.reduce((sum, invoice) => sum + invoice.totalAmount, 0);
+    const avgProcessingTime = '2.5 days';
 
     return {
       totalInvoices,
-      pending,
+      pendingApproval,
+      processing,
       approved,
       paid,
-      totalAmount
+      disputed,
+      totalValue,
+      avgProcessingTime
     };
   };
 
@@ -151,9 +203,15 @@ export const useInvoices = () => {
     setSearchTerm,
     statusFilter,
     setStatusFilter,
+    priorityFilter,
+    setPriorityFilter,
     addInvoice,
     updateInvoice,
     deleteInvoice,
+    getInvoice,
+    approveInvoice,
+    rejectInvoice,
+    payInvoice,
     getMetrics
   };
 };
