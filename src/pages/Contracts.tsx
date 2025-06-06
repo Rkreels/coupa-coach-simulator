@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { ContractsModule } from '../components/modules/ContractsModule';
+import { AllContractsModule } from '../components/modules/AllContractsModule';
 
 const ContractsPage = () => {
   return (
     <Routes>
-      <Route path="/*" element={<ContractsModule />} />
+      <Route path="/*" element={<AllContractsModule />} />
     </Routes>
   );
 };

@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { SuppliersModule } from '../components/modules/SuppliersModule';
+import { AllSuppliersModule } from '../components/modules/AllSuppliersModule';
 
 const SuppliersPage = () => {
   return (
     <Routes>
-      <Route path="/*" element={<SuppliersModule />} />
+      <Route path="/*" element={<AllSuppliersModule />} />
     </Routes>
   );
 };

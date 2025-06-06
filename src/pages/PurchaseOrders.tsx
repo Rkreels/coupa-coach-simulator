@@ -256,6 +256,32 @@ const PurchaseOrdersPage = () => {
     </DropdownMenu>
   );
 
+  // Create headers with all required PO fields for export
+  const exportHeaders = {
+    id: 'PO Number',
+    title: 'Title',
+    vendor: 'Vendor',
+    vendorId: 'Vendor ID',
+    status: 'Status',
+    totalAmount: 'Total Amount',
+    currency: 'Currency',
+    dateCreated: 'Date Created',
+    dateModified: 'Date Modified',
+    expectedDelivery: 'Expected Delivery',
+    actualDelivery: 'Actual Delivery',
+    sentDate: 'Sent Date',
+    receivedDate: 'Received Date',
+    approvedDate: 'Approved Date',
+    requestor: 'Requestor',
+    department: 'Department',
+    priority: 'Priority',
+    approvalStatus: 'Approval Status',
+    lineItems: 'Line Items',
+    notes: 'Notes',
+    attachments: 'Attachments',
+    deliveryStatus: 'Delivery Status'
+  };
+
   return (
     <ApplicationLayout pageTitle="Purchase Orders">
       <div className="space-y-6">
@@ -309,26 +335,7 @@ const PurchaseOrdersPage = () => {
                   data={allPurchaseOrders}
                   onImport={handleImport}
                   filename="purchase-orders"
-                  headers={{
-                    id: 'PO Number',
-                    title: 'Title',
-                    vendor: 'Vendor',
-                    vendorId: 'Vendor ID',
-                    status: 'Status',
-                    totalAmount: 'Total Amount',
-                    currency: 'Currency',
-                    dateCreated: 'Date Created',
-                    dateModified: 'Date Modified',
-                    expectedDelivery: 'Expected Delivery',
-                    actualDelivery: 'Actual Delivery',
-                    requestor: 'Requestor',
-                    department: 'Department',
-                    priority: 'Priority',
-                    approvalStatus: 'Approval Status',
-                    lineItems: 'Line Items',
-                    notes: 'Notes',
-                    attachments: 'Attachments'
-                  }}
+                  headers={exportHeaders}
                 />
                 <Button onClick={handleAddPO}>
                   <Plus className="h-4 w-4 mr-2" />

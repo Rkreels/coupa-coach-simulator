@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import AllInvoicesPage from './invoices/AllInvoices';
+import { AllInvoicesModule } from '../components/modules/AllInvoicesModule';
 import PendingInvoicesPage from './invoices/PendingInvoices';
 import ProcessingInvoicesPage from './invoices/ProcessingInvoices';
 import ApprovedInvoicesPage from './invoices/ApprovedInvoices';
@@ -12,7 +12,7 @@ import { ModulePage } from '../components/ModulePage';
 const InvoicesPage = () => {
   return (
     <Routes>
-      <Route path="/" element={<AllInvoicesPage />} />
+      <Route path="/" element={<AllInvoicesModule />} />
       <Route path="/pending" element={<PendingInvoicesPage />} />
       <Route path="/processing" element={<ProcessingInvoicesPage />} />
       <Route path="/approved" element={<ApprovedInvoicesPage />} />

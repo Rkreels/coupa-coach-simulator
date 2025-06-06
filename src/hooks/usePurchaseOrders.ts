@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -171,6 +170,7 @@ export function usePurchaseOrders() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [sortConfig, setSortConfig] = useState<{ key: keyof PurchaseOrder; direction: 'asc' | 'desc' } | null>(null);
 
   const filteredData = useMemo(() => {
     let result = purchaseOrders;
@@ -192,8 +192,49 @@ export function usePurchaseOrders() {
       result = result.filter((po) => po.department === departmentFilter);
     }
 
+    // Apply sorting
+    if (sortConfig) {
+      result = [...result].sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+        
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
     return result;
-  }, [purchaseOrders, searchTerm, statusFilter, departmentFilter]);
+  }, [purchaseOrders, searchTerm, statusFilter, departmentFilter, sortConfig]);
+
+  const filters = {
+    status: statusFilter,
+    department: departmentFilter
+  };
+
+  const updateFilter = (filterType: string, value: string) => {
+    if (filterType === 'status') {
+      setStatusFilter(value);
+    } else if (filterType === 'department') {
+      setDepartmentFilter(value);
+    }
+  };
+
+  const handleSort = (key: keyof PurchaseOrder) => {
+    setSortConfig(current => {
+      if (current?.key === key) {
+        return {
+          key,
+          direction: current.direction === 'asc' ? 'desc' : 'asc'
+        };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
 
   const addPurchaseOrder = (po: Omit<PurchaseOrder, 'id' | 'dateCreated' | 'dateModified'>) => {
     const newPO = {
@@ -262,6 +303,10 @@ export function usePurchaseOrders() {
     allPurchaseOrders: purchaseOrders,
     searchTerm,
     setSearchTerm,
+    filters,
+    updateFilter,
+    sortConfig,
+    handleSort,
     statusFilter,
     setStatusFilter,
     departmentFilter,
