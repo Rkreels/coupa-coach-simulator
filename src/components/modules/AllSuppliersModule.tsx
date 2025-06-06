@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -325,7 +324,7 @@ export const AllSuppliersModule = () => {
                     contactPerson: 'Contact Person',
                     email: 'Email',
                     phone: 'Phone'
-                  }}
+                  } as any}
                 />
                 <Button onClick={handleAddSupplier}>
                   <Plus className="h-4 w-4 mr-2" />

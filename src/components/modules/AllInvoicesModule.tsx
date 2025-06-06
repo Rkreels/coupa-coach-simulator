@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -358,7 +357,7 @@ export const AllInvoicesModule = () => {
                     totalAmount: 'Total Amount',
                     invoiceDate: 'Invoice Date',
                     dueDate: 'Due Date'
-                  }}
+                  } as any}
                 />
                 <Button onClick={handleAddInvoice}>
                   <Plus className="h-4 w-4 mr-2" />

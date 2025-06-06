@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -348,7 +347,7 @@ export const AllContractsModule = () => {
                     value: 'Value',
                     startDate: 'Start Date',
                     endDate: 'End Date'
-                  }}
+                  } as any}
                 />
                 <Button onClick={handleAddContract}>
                   <Plus className="h-4 w-4 mr-2" />
