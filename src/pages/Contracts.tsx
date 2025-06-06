@@ -1,13 +1,17 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { ContractsNavigation } from '../components/navigation/ContractsNavigation';
 import { AllContractsModule } from '../components/modules/AllContractsModule';
 
 const ContractsPage = () => {
   return (
-    <Routes>
-      <Route path="/*" element={<AllContractsModule />} />
-    </Routes>
+    <div>
+      <ContractsNavigation />
+      <Routes>
+        <Route path="/*" element={<AllContractsModule />} />
+      </Routes>
+    </div>
   );
 };
 
