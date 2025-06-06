@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TopNavigation } from '../TopNavigation';
+import TopNavigation from '../TopNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
