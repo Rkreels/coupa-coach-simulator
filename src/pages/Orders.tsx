@@ -1,26 +1,22 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import AllOrdersPage from './orders/AllOrders';
-import CreateOrderPage from './orders/CreateOrder';
+import { AllOrdersModule } from '../components/modules/AllOrdersModule';
 import PendingOrdersPage from './orders/PendingOrders';
 import ApprovedOrdersPage from './orders/ApprovedOrders';
 import SentOrdersPage from './orders/SentOrders';
 import ReceivedOrdersPage from './orders/ReceivedOrders';
-import { ModulePage } from '../components/ModulePage';
+import CreateOrderPage from './orders/CreateOrder';
 
 const OrdersPage = () => {
   return (
     <Routes>
-      <Route path="/" element={<AllOrdersPage />} />
-      <Route path="/create" element={<CreateOrderPage />} />
+      <Route path="/" element={<AllOrdersModule />} />
       <Route path="/pending" element={<PendingOrdersPage />} />
       <Route path="/approved" element={<ApprovedOrdersPage />} />
       <Route path="/sent" element={<SentOrdersPage />} />
       <Route path="/received" element={<ReceivedOrdersPage />} />
-      <Route path="/receipts" element={<ModulePage moduleName="Orders" pageTitle="Order Receipts" />} />
-      <Route path="/returns" element={<ModulePage moduleName="Orders" pageTitle="Returns" />} />
-      <Route path="/lines" element={<ModulePage moduleName="Orders" pageTitle="Order Lines" />} />
+      <Route path="/create" element={<CreateOrderPage />} />
     </Routes>
   );
 };
