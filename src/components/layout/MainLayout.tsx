@@ -1,6 +1,6 @@
 
 import React from 'react';
-import TopNavigation from '../TopNavigation';
+import { MainNavigation } from '../MainNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface MainLayoutProps {
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <TopNavigation />
+      <MainNavigation />
       <main>
         {children}
       </main>
