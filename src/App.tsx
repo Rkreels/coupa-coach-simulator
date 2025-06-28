@@ -9,6 +9,7 @@ import OrdersPage from './pages/Orders';
 import InvoicesPage from './pages/Invoices';
 import SuppliersPage from './pages/Suppliers';
 import ContractsPage from './pages/Contracts';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/invoices/*" element={<InvoicesPage />} />
             <Route path="/suppliers/*" element={<SuppliersPage />} />
             <Route path="/contracts/*" element={<ContractsPage />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </MainLayout>
         <Toaster />
