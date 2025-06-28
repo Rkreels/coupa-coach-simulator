@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
+import { SetupNavigation } from '../components/navigation/SetupNavigation';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,6 +12,8 @@ const Setup = () => {
       pageTitle="Setup"
       pageLoadScript="Welcome to the Setup area. Here you can configure your Coupa instance, manage users, and customize settings for various modules."
     >
+      <SetupNavigation />
+      
       <div className="mb-6">
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />

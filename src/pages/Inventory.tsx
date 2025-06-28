@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
+import { InventoryNavigation } from '../components/navigation/InventoryNavigation';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -66,6 +66,8 @@ const Inventory = () => {
       pageTitle="Inventory"
       pageLoadScript="Welcome to Inventory Management. Here you can track stock levels, manage items, and view inventory transactions across multiple locations."
     >
+      <InventoryNavigation />
+      
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
+import { SpendGuardNavigation } from '../components/navigation/SpendGuardNavigation';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -72,6 +72,8 @@ const SpendGuard = () => {
       pageTitle="Spend Guard"
       pageLoadScript="Welcome to Spend Guard. This module helps identify potential risks, fraud, and compliance issues in your spending, helping you save money and maintain financial integrity."
     >
+      <SpendGuardNavigation />
+      
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">

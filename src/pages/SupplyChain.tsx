@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { ApplicationLayout } from '../components/ApplicationLayout';
+import { SupplyChainNavigation } from '../components/navigation/SupplyChainNavigation';
 import { TotalMetricCard } from '../components/supply-chain/TotalMetricCard';
 import { ProductFlowChart } from '../components/supply-chain/ProductFlowChart';
 import { FlowUnitsCostScatter } from '../components/supply-chain/FlowUnitsCostScatter';
@@ -251,6 +251,8 @@ const SupplyChain = () => {
 
   return (
     <ApplicationLayout pageLoadScript={voiceScripts.supplyChain.pageLoad}>
+      <SupplyChainNavigation />
+      
       <div className="space-y-6">
         <div className="mb-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
