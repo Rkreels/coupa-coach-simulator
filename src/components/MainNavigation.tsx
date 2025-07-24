@@ -2,6 +2,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   FileText, 
   ShoppingCart, 
@@ -14,7 +25,10 @@ import {
   Settings,
   BarChart3,
   Menu,
-  X
+  X,
+  User,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 
 const navigationItems = [
@@ -33,6 +47,15 @@ const navigationItems = [
 export const MainNavigation = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout, switchUser } = useAuth();
+
+  const demoUsers = [
+    { id: 'usr-001', name: 'Admin User', role: 'System Administrator' },
+    { id: 'usr-002', name: 'John Manager', role: 'Procurement Manager' },
+    { id: 'usr-003', name: 'Jane Buyer', role: 'Buyer' },
+    { id: 'usr-004', name: 'Bob Employee', role: 'Employee' },
+    { id: 'usr-005', name: 'Sarah Finance', role: 'Finance Manager' }
+  ];
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -69,18 +92,71 @@ export const MainNavigation = () => {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
+          {/* User Profile and Mobile menu button */}
+          <div className="flex items-center gap-4">
+            {/* User Profile */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.role} • {user?.department}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Switch User (Demo)
+                </DropdownMenuLabel>
+                {demoUsers.map((demoUser) => (
+                  <DropdownMenuItem
+                    key={demoUser.id}
+                    onClick={() => switchUser(demoUser.id)}
+                    className="cursor-pointer"
+                  >
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span className="text-sm">{demoUser.name}</span>
+                      <span className="text-xs text-muted-foreground">{demoUser.role}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Mobile menu button */}
+            <div className="lg:hidden flex items-center">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
