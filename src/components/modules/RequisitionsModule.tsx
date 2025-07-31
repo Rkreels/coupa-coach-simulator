@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { DataTable } from '@/components/ui/data-table';
-import { useRequisitions } from '../../hooks/useRequisitions';
+import { useEnterpriseRequisitions } from '../../hooks/useEnterpriseRequisitions';
 import { Plus, Search, Eye, Edit, FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 export const RequisitionsModule = () => {
@@ -17,10 +17,8 @@ export const RequisitionsModule = () => {
     setSearchTerm,
     statusFilter,
     setStatusFilter,
-    getMetrics
-  } = useRequisitions();
-
-  const metrics = getMetrics();
+    metrics
+  } = useEnterpriseRequisitions();
 
   const getStatusBadge = (status: string) => {
     const colors = {
