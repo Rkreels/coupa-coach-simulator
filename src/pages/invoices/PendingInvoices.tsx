@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
 import { useToast } from '@/hooks/use-toast';
-import { useInvoices } from '../../hooks/useInvoices';
+import { useEnterpriseInvoices } from '../../hooks/useEnterpriseInvoices';
 import { CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
 
 const PendingInvoicesPage = () => {
   const { toast } = useToast();
-  const { invoices, approveInvoice, rejectInvoice } = useInvoices();
+  const { allInvoices: invoices, approveInvoice, rejectInvoice } = useEnterpriseInvoices();
   const pendingInvoices = invoices.filter(invoice => invoice.status === 'pending');
 
-  const handleApprove = (invoice) => {
+  const handleApprove = (invoice: any) => {
     approveInvoice(invoice.id, 'Current User');
     toast({
       title: 'Invoice Approved',
@@ -22,7 +22,7 @@ const PendingInvoicesPage = () => {
     });
   };
 
-  const handleReject = (invoice) => {
+  const handleReject = (invoice: any) => {
     rejectInvoice(invoice.id, 'Rejected by approver');
     toast({
       title: 'Invoice Rejected',
@@ -32,16 +32,16 @@ const PendingInvoicesPage = () => {
   };
 
   const columns = [
-    { key: 'invoiceNumber', header: 'Invoice #', sortable: true },
-    { key: 'vendorName', header: 'Vendor', sortable: true },
+    { key: 'invoiceNumber' as const, header: 'Invoice #', sortable: true },
+    { key: 'vendorName' as const, header: 'Vendor', sortable: true },
     { 
-      key: 'totalAmount', 
+      key: 'totalAmount' as const, 
       header: 'Amount',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: number, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
-    { key: 'invoiceDate', header: 'Invoice Date', sortable: true },
-    { key: 'dueDate', header: 'Due Date', sortable: true },
-    { key: 'department', header: 'Department', sortable: true }
+    { key: 'invoiceDate' as const, header: 'Invoice Date', sortable: true },
+    { key: 'dueDate' as const, header: 'Due Date', sortable: true },
+    { key: 'department' as const, header: 'Department', sortable: true }
   ];
 
   return (

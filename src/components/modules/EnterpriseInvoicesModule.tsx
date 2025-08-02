@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEnterpriseInvoices } from '../../hooks/useEnterpriseInvoices';
-import { EnterpriseInvoice } from '../../types/coupa-entities';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Plus, 
@@ -92,26 +91,19 @@ export const EnterpriseInvoicesModule = () => {
     try {
       switch (action) {
         case 'approve':
-          approveInvoice(invoiceId, 'USR-001', 'Approved via quick action');
+          approveInvoice(invoiceId, 'Current User');
           toast({ title: 'Invoice approved successfully' });
           break;
         case 'reject':
-          rejectInvoice(invoiceId, 'USR-001', 'Rejected via quick action');
+          rejectInvoice(invoiceId, 'Rejected via quick action');
           toast({ title: 'Invoice rejected' });
           break;
         case 'pay':
-          payInvoice(invoiceId, 'ACH');
+          payInvoice(invoiceId, { method: 'ACH', reference: `PAY-${Date.now()}` });
           toast({ title: 'Invoice marked as paid' });
           break;
         case 'dispute':
-          disputeInvoice(invoiceId, {
-            type: 'pricing',
-            amount: 0,
-            description: 'Disputed via quick action',
-            createdBy: 'USR-001',
-            status: 'open',
-            documents: []
-          });
+          disputeInvoice(invoiceId, 'Disputed via quick action');
           toast({ title: 'Invoice disputed' });
           break;
       }
@@ -126,65 +118,46 @@ export const EnterpriseInvoicesModule = () => {
 
   const columns = [
     {
-      key: 'number' as keyof EnterpriseInvoice,
+      key: 'invoiceNumber' as const,
       header: 'Invoice Number',
-      render: (value: any, invoice: EnterpriseInvoice) => (
+      render: (value: any, invoice: any) => (
         <div className="font-medium">{value}</div>
       )
     },
     {
-      key: 'supplierInvoiceNumber' as keyof EnterpriseInvoice,
+      key: 'supplierInvoiceNumber' as const,
       header: 'Supplier Invoice #',
       render: (value: any) => (
         <div className="text-sm text-muted-foreground">{value}</div>
       )
     },
     {
-      key: 'supplier' as keyof EnterpriseInvoice,
+      key: 'vendorName' as const,
       header: 'Supplier',
-      render: (value: any, invoice: EnterpriseInvoice) => invoice.supplier.displayName
+      render: (value: any, invoice: any) => invoice.vendorName
     },
     {
-      key: 'type' as keyof EnterpriseInvoice,
-      header: 'Type',
-      render: (value: any) => (
-        <Badge className={getTypeColor(value)}>
-          {value.replace('_', ' ').toUpperCase()}
-        </Badge>
-      )
-    },
-    {
-      key: 'status' as keyof EnterpriseInvoice,
+      key: 'status' as const,
       header: 'Status',
       render: (value: any) => getStatusBadge(value)
     },
     {
-      key: 'matchingStatus' as keyof EnterpriseInvoice,
-      header: 'Matching',
-      render: (value: any) => (
-        <Badge className={getMatchingStatusBadge(value)}>
-          {value.toUpperCase()}
-        </Badge>
-      )
-    },
-    {
-      key: 'totalAmount' as keyof EnterpriseInvoice,
+      key: 'totalAmount' as const,
       header: 'Total Amount',
-      render: (value: any) => (
+      render: (value: any, invoice: any) => (
         <div className="text-right font-medium">
-          ${value.toLocaleString()}
+          {invoice.currency} {value.toLocaleString()}
         </div>
       )
     },
     {
-      key: 'dueDate' as keyof EnterpriseInvoice,
+      key: 'dueDate' as const,
       header: 'Due Date',
-      render: (value: any, invoice: EnterpriseInvoice) => {
-        const dueDate = new Date(value);
-        const isOverdue = dueDate < new Date() && invoice.status !== 'paid';
+      render: (value: any, invoice: any) => {
+        const isOverdue = new Date(value) < new Date() && invoice.status !== 'paid';
         return (
           <div className={isOverdue ? 'text-red-600 font-medium' : ''}>
-            {dueDate.toLocaleDateString()}
+            {value}
           </div>
         );
       }
@@ -193,9 +166,9 @@ export const EnterpriseInvoicesModule = () => {
 
   // Filter data based on search term
   const filteredData = invoices.filter(invoice =>
-    invoice.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
     invoice.supplierInvoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    invoice.supplier.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+    invoice.vendorName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -230,7 +203,7 @@ export const EnterpriseInvoicesModule = () => {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metrics.pendingApproval}</div>
+              <div className="text-2xl font-bold">{metrics.pending}</div>
               <p className="text-xs text-muted-foreground">
                 Awaiting approval
               </p>
