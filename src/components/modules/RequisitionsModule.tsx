@@ -21,6 +21,8 @@ export const RequisitionsModule = () => {
   } = useEnterpriseRequisitions();
 
   const getStatusBadge = (status: string) => {
+    if (!status) return <Badge className="bg-gray-100 text-gray-800">Unknown</Badge>;
+    
     const colors = {
       draft: 'bg-gray-100 text-gray-800',
       pending: 'bg-yellow-100 text-yellow-800',
@@ -57,16 +59,20 @@ export const RequisitionsModule = () => {
     { 
       key: 'priority' as const, 
       header: 'Priority',
-      render: (value: string) => (
-        <Badge className={
-          value === 'urgent' ? 'bg-red-100 text-red-800' :
-          value === 'high' ? 'bg-orange-100 text-orange-800' :
-          value === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-green-100 text-green-800'
-        }>
-          {value.charAt(0).toUpperCase() + value.slice(1)}
-        </Badge>
-      )
+      render: (value: string) => {
+        if (!value) return <Badge className="bg-gray-100 text-gray-800">Unknown</Badge>;
+        
+        return (
+          <Badge className={
+            value === 'urgent' ? 'bg-red-100 text-red-800' :
+            value === 'high' ? 'bg-orange-100 text-orange-800' :
+            value === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+            'bg-green-100 text-green-800'
+          }>
+            {value.charAt(0).toUpperCase() + value.slice(1)}
+          </Badge>
+        );
+      }
     },
     { 
       key: 'totalAmount' as const, 
