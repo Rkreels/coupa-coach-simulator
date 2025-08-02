@@ -119,7 +119,7 @@ export const RequisitionsModule = () => {
                   <Clock className="h-5 w-5 text-yellow-500" />
                   <div>
                     <p className="text-sm text-gray-500">Pending Approval</p>
-                    <p className="text-lg font-semibold">{metrics.pendingApproval}</p>
+                    <p className="text-lg font-semibold">{metrics.pending}</p>
                   </div>
                 </div>
               </CardContent>

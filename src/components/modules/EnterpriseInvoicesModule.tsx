@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEnterpriseInvoices } from '../../hooks/useEnterpriseInvoices';
+import { EnterpriseInvoice } from '../../types/coupa-entities';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Plus, 
@@ -108,7 +109,8 @@ export const EnterpriseInvoicesModule = () => {
             amount: 0,
             description: 'Disputed via quick action',
             createdBy: 'USR-001',
-            status: 'open'
+            status: 'open',
+            documents: []
           });
           toast({ title: 'Invoice disputed' });
           break;
@@ -124,119 +126,65 @@ export const EnterpriseInvoicesModule = () => {
 
   const columns = [
     {
-      accessorKey: 'number',
+      key: 'number' as keyof EnterpriseInvoice,
       header: 'Invoice Number',
-      cell: ({ row }: any) => (
-        <div className="font-medium">{row.getValue('number')}</div>
+      render: (value: any, invoice: EnterpriseInvoice) => (
+        <div className="font-medium">{value}</div>
       )
     },
     {
-      accessorKey: 'supplierInvoiceNumber',
+      key: 'supplierInvoiceNumber' as keyof EnterpriseInvoice,
       header: 'Supplier Invoice #',
-      cell: ({ row }: any) => (
-        <div className="text-sm text-muted-foreground">{row.getValue('supplierInvoiceNumber')}</div>
+      render: (value: any) => (
+        <div className="text-sm text-muted-foreground">{value}</div>
       )
     },
     {
-      accessorKey: 'supplier',
+      key: 'supplier' as keyof EnterpriseInvoice,
       header: 'Supplier',
-      cell: ({ row }: any) => row.original.supplier.displayName
+      render: (value: any, invoice: EnterpriseInvoice) => invoice.supplier.displayName
     },
     {
-      accessorKey: 'type',
+      key: 'type' as keyof EnterpriseInvoice,
       header: 'Type',
-      cell: ({ row }: any) => (
-        <Badge className={getTypeColor(row.getValue('type'))}>
-          {row.getValue('type').replace('_', ' ').toUpperCase()}
+      render: (value: any) => (
+        <Badge className={getTypeColor(value)}>
+          {value.replace('_', ' ').toUpperCase()}
         </Badge>
       )
     },
     {
-      accessorKey: 'status',
+      key: 'status' as keyof EnterpriseInvoice,
       header: 'Status',
-      cell: ({ row }: any) => getStatusBadge(row.getValue('status'))
+      render: (value: any) => getStatusBadge(value)
     },
     {
-      accessorKey: 'matchingStatus',
+      key: 'matchingStatus' as keyof EnterpriseInvoice,
       header: 'Matching',
-      cell: ({ row }: any) => (
-        <Badge className={getMatchingStatusBadge(row.getValue('matchingStatus'))}>
-          {row.getValue('matchingStatus').toUpperCase()}
+      render: (value: any) => (
+        <Badge className={getMatchingStatusBadge(value)}>
+          {value.toUpperCase()}
         </Badge>
       )
     },
     {
-      accessorKey: 'totalAmount',
+      key: 'totalAmount' as keyof EnterpriseInvoice,
       header: 'Total Amount',
-      cell: ({ row }: any) => (
+      render: (value: any) => (
         <div className="text-right font-medium">
-          ${row.getValue('totalAmount').toLocaleString()}
+          ${value.toLocaleString()}
         </div>
       )
     },
     {
-      accessorKey: 'dueDate',
+      key: 'dueDate' as keyof EnterpriseInvoice,
       header: 'Due Date',
-      cell: ({ row }: any) => {
-        const dueDate = new Date(row.getValue('dueDate'));
-        const isOverdue = dueDate < new Date() && row.original.status !== 'paid';
+      render: (value: any, invoice: EnterpriseInvoice) => {
+        const dueDate = new Date(value);
+        const isOverdue = dueDate < new Date() && invoice.status !== 'paid';
         return (
           <div className={isOverdue ? 'text-red-600 font-medium' : ''}>
             {dueDate.toLocaleDateString()}
-          </div>
-        );
-      }
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }: any) => {
-        const invoice = row.original;
-        return (
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
-            {invoice.status === 'pending_approval' && (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => handleQuickAction('approve', invoice.id)}
-                  className="text-green-600 hover:text-green-700"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => handleQuickAction('reject', invoice.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <AlertCircle className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-            {invoice.status === 'approved' && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleQuickAction('pay', invoice.id)}
-                className="text-blue-600 hover:text-blue-700"
-              >
-                <CreditCard className="h-4 w-4" />
-              </Button>
-            )}
-            {['received', 'pending_approval', 'approved'].includes(invoice.status) && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleQuickAction('dispute', invoice.id)}
-                className="text-yellow-600 hover:text-yellow-700"
-              >
-                <AlertTriangle className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         );
       }
@@ -363,7 +311,7 @@ export const EnterpriseInvoicesModule = () => {
 
             <DataTable 
               data={filteredData}
-              columns={columns.map(col => ({ ...col, key: col.accessorKey || col.id }))}
+              columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
             />

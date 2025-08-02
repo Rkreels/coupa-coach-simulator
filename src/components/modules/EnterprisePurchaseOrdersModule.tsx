@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEnterprisePurchaseOrders } from '../../hooks/useEnterprisePurchaseOrders';
+import { EnterprisePurchaseOrder } from '../../types/coupa-entities';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Plus, 
@@ -91,6 +92,7 @@ export const EnterprisePurchaseOrdersModule = () => {
         case 'receive':
           receivePurchaseOrder(poId, {
             number: `REC-${Date.now()}`,
+            purchaseOrderId: poId,
             receivedDate: new Date().toISOString(),
             receivedBy: 'USR-001',
             status: 'complete',
@@ -112,102 +114,58 @@ export const EnterprisePurchaseOrdersModule = () => {
 
   const columns = [
     {
-      accessorKey: 'number',
+      key: 'number' as keyof EnterprisePurchaseOrder,
       header: 'PO Number',
-      cell: ({ row }: any) => (
-        <div className="font-medium">{row.getValue('number')}</div>
+      render: (value: any) => (
+        <div className="font-medium">{value}</div>
       )
     },
     {
-      accessorKey: 'title',
+      key: 'title' as keyof EnterprisePurchaseOrder,
       header: 'Title',
-      cell: ({ row }: any) => (
-        <div className="max-w-[300px] truncate" title={row.getValue('title')}>
-          {row.getValue('title')}
+      render: (value: any) => (
+        <div className="max-w-[300px] truncate" title={value}>
+          {value}
         </div>
       )
     },
     {
-      accessorKey: 'supplier',
+      key: 'supplier' as keyof EnterprisePurchaseOrder,
       header: 'Supplier',
-      cell: ({ row }: any) => row.original.supplier.displayName
+      render: (value: any, po: EnterprisePurchaseOrder) => po.supplier.displayName
     },
     {
-      accessorKey: 'type',
+      key: 'type' as keyof EnterprisePurchaseOrder,
       header: 'Type',
-      cell: ({ row }: any) => (
-        <Badge className={getTypeColor(row.getValue('type'))}>
-          {row.getValue('type').toUpperCase()}
+      render: (value: any) => (
+        <Badge className={getTypeColor(value)}>
+          {value.toUpperCase()}
         </Badge>
       )
     },
     {
-      accessorKey: 'status',
+      key: 'status' as keyof EnterprisePurchaseOrder,
       header: 'Status',
-      cell: ({ row }: any) => getStatusBadge(row.getValue('status'))
+      render: (value: any) => getStatusBadge(value)
     },
     {
-      accessorKey: 'totalAmount',
+      key: 'totalAmount' as keyof EnterprisePurchaseOrder,
       header: 'Total Amount',
-      cell: ({ row }: any) => (
+      render: (value: any) => (
         <div className="text-right font-medium">
-          ${row.getValue('totalAmount').toLocaleString()}
+          ${value.toLocaleString()}
         </div>
       )
     },
     {
-      accessorKey: 'orderDate',
+      key: 'orderDate' as keyof EnterprisePurchaseOrder,
       header: 'Order Date',
-      cell: ({ row }: any) => new Date(row.getValue('orderDate')).toLocaleDateString()
+      render: (value: any) => new Date(value).toLocaleDateString()
     },
     {
-      accessorKey: 'requestedDeliveryDate',
+      key: 'requestedDeliveryDate' as keyof EnterprisePurchaseOrder,
       header: 'Delivery Date',
-      cell: ({ row }: any) => new Date(row.getValue('requestedDeliveryDate')).toLocaleDateString()
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }: any) => {
-        const po = row.original;
-        return (
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm">
-              <Eye className="h-4 w-4" />
-            </Button>
-            {po.status === 'approved' && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleQuickAction('issue', po.id)}
-                className="text-blue-600 hover:text-blue-700"
-              >
-                <Truck className="h-4 w-4" />
-              </Button>
-            )}
-            {po.status === 'issued' && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleQuickAction('acknowledge', po.id)}
-                className="text-purple-600 hover:text-purple-700"
-              >
-                <CheckCircle className="h-4 w-4" />
-              </Button>
-            )}
-            {(po.status === 'acknowledged' || po.status === 'issued') && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleQuickAction('receive', po.id)}
-                className="text-purple-600 hover:text-purple-700"
-              >
-                <Package className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        );
-      }
+      render: (value: any) => new Date(value).toLocaleDateString()
     }
   ];
 
@@ -331,7 +289,7 @@ export const EnterprisePurchaseOrdersModule = () => {
 
             <DataTable 
               data={filteredData}
-              columns={columns.map(col => ({ ...col, key: col.accessorKey || col.id }))}
+              columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
             />
