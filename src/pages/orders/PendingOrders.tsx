@@ -1,89 +1,124 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
+import { Input } from '@/components/ui/input';
+import { DataTable } from '@/components/ui/data-table';
+import { useEnterpriseOrders } from '../../hooks/useEnterpriseOrders';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Search, Eye, CheckCircle, X, Clock, AlertCircle, Edit } from 'lucide-react';
 
 const PendingOrdersPage = () => {
+  const { 
+    orders, 
+    metrics,
+    searchTerm,
+    setSearchTerm,
+    approveOrder,
+    rejectOrder
+  } = useEnterpriseOrders();
   const { toast } = useToast();
-  const { purchaseOrders, approvePurchaseOrder, rejectPurchaseOrder } = usePurchaseOrders();
-  const pendingOrders = purchaseOrders.filter(order => order.status === 'pending');
 
-  const handleApprove = (orderId: string) => {
-    approvePurchaseOrder(orderId);
+  const pendingOrders = orders.filter(order => order.status === 'pending_approval');
+
+  const handleApprove = (order: any) => {
+    approveOrder(order.id, 'USR-001', 'Approved via bulk action');
     toast({
       title: 'Order Approved',
-      description: `Purchase order ${orderId} has been approved.`
+      description: `Order ${order.number} has been approved successfully.`
     });
   };
 
-  const handleReject = (orderId: string) => {
-    rejectPurchaseOrder(orderId);
+  const handleReject = (order: any) => {
+    rejectOrder(order.id, 'USR-001', 'Does not meet approval criteria');
     toast({
       title: 'Order Rejected',
-      description: `Purchase order ${orderId} has been rejected.`,
+      description: `Order ${order.number} has been rejected.`,
       variant: 'destructive'
     });
   };
 
   const columns = [
-    { key: 'id' as const, header: 'Order ID', sortable: true },
+    { 
+      key: 'number' as const, 
+      header: 'Order Number', 
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-yellow-500" />
+          <span className="font-mono text-sm">{value}</span>
+        </div>
+      )
+    },
     { key: 'title' as const, header: 'Title', sortable: true },
-    { key: 'vendor' as const, header: 'Vendor', sortable: true },
+    { 
+      key: 'supplier' as const, 
+      header: 'Supplier', 
+      render: (value: any, order: any) => order.supplier.displayName 
+    },
     { 
       key: 'totalAmount' as const, 
       header: 'Amount',
-      render: (value: number, item: any) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: number, order: any) => `${order.currency} ${value.toLocaleString()}`
     },
-    { key: 'requestor' as const, header: 'Requestor', sortable: true },
-    { key: 'expectedDelivery' as const, header: 'Expected Delivery', sortable: true }
+    { key: 'orderDate' as const, header: 'Order Date', sortable: true, render: (value: string) => new Date(value).toLocaleDateString() }
   ];
 
   return (
     <ApplicationLayout pageTitle="Pending Orders">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Orders Pending Approval</h2>
-          <Badge className="bg-yellow-100 text-yellow-800">
-            <Clock className="h-4 w-4 mr-1" />
-            {pendingOrders.length} Pending
-          </Badge>
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold">Pending Orders</h2>
+            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+              {pendingOrders.length} Awaiting Approval
+            </Badge>
+          </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Pending Approval</CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle>Orders Awaiting Approval</CardTitle>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search orders..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-64"
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <DataTable
               data={pendingOrders}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
-              actions={(item) => (
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              actions={(order) => (
                 <div className="flex gap-1">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-green-600 hover:text-green-700"
-                    onClick={() => handleApprove(item.id)}
-                  >
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Approve
+                  <Button variant="ghost" size="sm" title="View Details">
+                    <Eye className="h-4 w-4" />
                   </Button>
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="sm" 
-                    className="text-red-600 hover:text-red-700"
-                    onClick={() => handleReject(item.id)}
+                    onClick={() => handleApprove(order)}
+                    className="text-green-600 hover:text-green-700"
+                    title="Approve"
                   >
-                    <XCircle className="h-4 w-4 mr-1" />
-                    Reject
+                    <CheckCircle className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => handleReject(order)}
+                    className="text-red-600 hover:text-red-700"
+                    title="Reject"
+                  >
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               )}
