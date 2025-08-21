@@ -100,7 +100,7 @@ const ApprovedRequisitionsPage = () => {
                 <div>
                   <p className="text-sm text-gray-500">Ready for PO</p>
                   <p className="text-lg font-semibold">
-                    {approvedRequisitions.filter(r => !r.purchaseOrderId).length}
+                    {approvedRequisitions.length}
                   </p>
                 </div>
               </div>

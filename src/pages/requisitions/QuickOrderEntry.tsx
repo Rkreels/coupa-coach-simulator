@@ -83,16 +83,63 @@ const QuickOrderEntryPage = () => {
 
     const requisitionData = {
       title: formData.title,
-      department: formData.department,
-      costCenter: formData.costCenter,
-      neededByDate: formData.neededByDate,
+      description: formData.businessJustification,
+      status: (action === 'save' ? 'draft' : 'submitted') as any,
       businessJustification: formData.businessJustification,
-      priority: formData.priority,
-      lineItems: lineItems.filter(item => item.description),
-      totalAmount,
+      requestorId: 'current-user',
+      requestor: {
+        id: 'current-user',
+        firstName: 'Current',
+        lastName: 'User',
+        email: 'user@company.com',
+        displayName: 'Current User'
+      } as any,
+      departmentId: 'dept-1',
+      department: {
+        id: 'dept-1',
+        name: formData.department,
+        code: formData.department.toUpperCase()
+      } as any,
+      costCenterId: 'cc-1',
+      costCenter: {
+        id: 'cc-1',
+        name: formData.costCenter || 'Default',
+        code: (formData.costCenter || 'DEFAULT').toUpperCase()
+      } as any,
       currency: 'USD',
-      status: action === 'save' ? 'draft' : 'pending',
-      type: 'quick_order'
+      totalAmount,
+      taxAmount: 0,
+      shippingAmount: 0,
+      discountAmount: 0,
+      netAmount: totalAmount,
+      urgency: (formData.priority === 'urgent' ? 'critical' : formData.priority) as 'low' | 'medium' | 'high' | 'critical',
+      needByDate: formData.neededByDate || new Date().toISOString().split('T')[0],
+      deliveryAddress: {} as any,
+      billToAddress: {} as any,
+      shipToAddress: {} as any,
+      approvalPath: [],
+      lineItems: lineItems.filter(item => item.description).map((item, index) => ({
+        id: `item-${Date.now()}-${index}`,
+        lineNumber: index + 1,
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        unitOfMeasure: 'EA',
+        status: 'pending' as const,
+        category: { id: 'cat-1', name: item.category || 'General' } as any,
+        supplier: { id: 'sup-1', name: item.supplier || 'TBD' } as any,
+        needByDate: formData.neededByDate || new Date().toISOString().split('T')[0],
+        currency: 'USD',
+        taxAmount: 0,
+        discountAmount: 0,
+        netAmount: item.totalPrice
+      })) as any,
+      attachments: [],
+      comments: [],
+      tags: [],
+      customFields: [],
+      isTemplate: false
     };
 
     addRequisition(requisitionData);

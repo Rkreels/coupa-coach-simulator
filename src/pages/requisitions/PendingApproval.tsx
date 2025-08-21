@@ -53,14 +53,14 @@ const PendingApprovalPage = () => {
     { key: 'requestor' as const, header: 'Requestor', sortable: true },
     { key: 'department' as const, header: 'Department', sortable: true },
     { 
-      key: 'priority' as const, 
+      key: 'urgency' as const, 
       header: 'Priority',
       render: (value: string) => {
         if (!value) return <Badge className="bg-gray-100 text-gray-800">Unknown</Badge>;
         
         return (
           <Badge className={
-            value === 'urgent' ? 'bg-red-100 text-red-800' :
+            value === 'critical' ? 'bg-red-100 text-red-800' :
             value === 'high' ? 'bg-orange-100 text-orange-800' :
             value === 'medium' ? 'bg-yellow-100 text-yellow-800' :
             'bg-green-100 text-green-800'
@@ -116,9 +116,9 @@ const PendingApprovalPage = () => {
               <div className="flex items-center space-x-2">
                 <AlertCircle className="h-5 w-5 text-red-500" />
                 <div>
-                  <p className="text-sm text-gray-500">Urgent Priority</p>
+                  <p className="text-sm text-gray-500">Critical Priority</p>
                   <p className="text-lg font-semibold">
-                    {pendingRequisitions.filter(r => r.priority === 'urgent').length}
+                    {pendingRequisitions.filter(r => r.urgency === 'critical').length}
                   </p>
                 </div>
               </div>
