@@ -27,6 +27,15 @@ export const TopBar: React.FC = () => {
         <div className="ml-6 relative flex-grow w-80">
           <GlobalSearch />
         </div>
+        
+        <div className="ml-6">
+          <a 
+            href="https://skillsim.vercel.app/dashboard" 
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Master Dashboard
+          </a>
+        </div>
       </div>
       
       <div className="flex items-center space-x-3">
