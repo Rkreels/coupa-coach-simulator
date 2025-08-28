@@ -20,6 +20,12 @@ import UsersRoles from './pages/setup/UsersRoles';
 import Departments from './pages/setup/Departments';
 import ApprovalWorkflows from './pages/setup/ApprovalWorkflows';
 import PaymentMethods from './pages/setup/PaymentMethods';
+import TaxConfiguration from './pages/setup/TaxConfiguration';
+import Currencies from './pages/setup/Currencies';
+import CustomFields from './pages/setup/CustomFields';
+import Integrations from './pages/setup/Integrations';
+import EmailTemplates from './pages/setup/EmailTemplates';
+import SecuritySettings from './pages/setup/SecuritySettings';
 import ApprovalsPage from './pages/Approvals';
 import NotFound from './pages/NotFound';
 
@@ -69,6 +75,12 @@ function App() {
               <Route path="/departments" element={<Departments />} />
               <Route path="/approval-workflows" element={<ApprovalWorkflows />} />
               <Route path="/payment-methods" element={<PaymentMethods />} />
+              <Route path="/tax-configuration" element={<TaxConfiguration />} />
+              <Route path="/currencies" element={<Currencies />} />
+              <Route path="/custom-fields" element={<CustomFields />} />
+              <Route path="/integrations" element={<Integrations />} />
+              <Route path="/email-templates" element={<EmailTemplates />} />
+              <Route path="/security-settings" element={<SecuritySettings />} />
             </Routes>
           </ProtectedRoute>
         } />

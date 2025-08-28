@@ -16,24 +16,26 @@ import {
 export const TopBar: React.FC = () => {
   return (
     <header className="h-14 border-b border-gray-200 bg-white flex items-center justify-between px-4 shadow-sm z-10">
-      <div className="flex items-center">
-        <a href="/" className="flex items-center">
+      <div className="flex items-center min-w-0 flex-1">
+        <Link to="/" className="flex items-center flex-shrink-0">
           <div className="bg-blue-600 rounded-md w-8 h-8 flex items-center justify-center">
             <span className="text-white font-bold">C</span>
           </div>
-          <span className="text-blue-600 font-bold text-xl ml-1">coupa</span>
-        </a>
+          <span className="text-blue-600 font-bold text-xl ml-1 hidden sm:inline">coupa</span>
+        </Link>
         
-        <div className="ml-6 relative flex-grow w-80">
+        <div className="ml-4 sm:ml-6 flex-1 max-w-md">
           <GlobalSearch />
         </div>
         
-        <div className="ml-6">
+        <div className="ml-4 flex-shrink-0">
           <a 
             href="https://skillsim.vercel.app/dashboard" 
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+            target="_self"
+            className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
-            Master Dashboard
+            <span className="hidden sm:inline">Master Dashboard</span>
+            <span className="sm:hidden">Master</span>
           </a>
         </div>
       </div>
