@@ -23,6 +23,7 @@ interface ContractTemplate {
 
 const ContractTemplatesPage = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
   const [templates] = useState<ContractTemplate[]>([
     {
       id: 'TPL-001',
@@ -87,12 +88,12 @@ const ContractTemplatesPage = () => {
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const columns = [
+  const columns: any[] = [
     { 
       key: 'name', 
       header: 'Template Name', 
       sortable: true,
-      render: (value, item) => (
+      render: (value: any, item: any) => (
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-gray-400" />
           <span>{value}</span>
@@ -105,7 +106,7 @@ const ContractTemplatesPage = () => {
     {
       key: 'type',
       header: 'Type',
-      render: (value, item) => (
+      render: (value: any, item: any) => (
         <Badge className={getTypeColor(item.type)}>
           {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
         </Badge>
@@ -142,8 +143,8 @@ const ContractTemplatesPage = () => {
             <DataTable
               data={templates}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

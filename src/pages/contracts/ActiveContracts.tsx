@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,12 +40,14 @@ const ActiveContractsPage = () => {
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const columns = [
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns: any[] = [
     { key: 'title', header: 'Contract Title', sortable: true },
     {
       key: 'type',
       header: 'Type',
-      render: (value, item) => (
+      render: (value: any, item: any) => (
         <Badge className={getTypeColor(item.type)}>
           {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
         </Badge>
@@ -55,14 +57,14 @@ const ActiveContractsPage = () => {
     { 
       key: 'value', 
       header: 'Value',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: any, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
     { key: 'startDate', header: 'Start Date', sortable: true },
     { 
       key: 'endDate', 
       header: 'End Date', 
       sortable: true,
-      render: (value, item) => (
+      render: (value: any, item: any) => (
         <div className="flex items-center gap-2">
           <span>{value}</span>
           {isExpiringSoon(item.endDate, item.notificationDays) && (
@@ -93,8 +95,8 @@ const ActiveContractsPage = () => {
             <DataTable
               data={activeContracts}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

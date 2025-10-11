@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -9,17 +9,18 @@ import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
 import { CheckCircle2, Eye, Download, FileText } from 'lucide-react';
 
 const ReceivedOrdersPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
   const { purchaseOrders } = usePurchaseOrders();
   const receivedOrders = purchaseOrders.filter(order => order.status === 'received');
 
-  const columns = [
+  const columns: any[] = [
     { key: 'id', header: 'Order ID', sortable: true },
     { key: 'title', header: 'Title', sortable: true },
     { key: 'vendor', header: 'Vendor', sortable: true },
-    { 
+{ 
       key: 'totalAmount', 
       header: 'Amount',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: any, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
     { key: 'receivedDate', header: 'Received Date', sortable: true },
     { key: 'deliveryStatus', header: 'Delivery Status', sortable: true }
@@ -44,8 +45,8 @@ const ReceivedOrdersPage = () => {
             <DataTable
               data={receivedOrders}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

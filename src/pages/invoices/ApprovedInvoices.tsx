@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { DollarSign, Eye, Download, CheckCircle } from 'lucide-react';
 
 const ApprovedInvoicesPage = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
   const { invoices, payInvoice } = useInvoices();
   const approvedInvoices = invoices.filter(invoice => invoice.status === 'approved');
 
@@ -22,13 +23,13 @@ const ApprovedInvoicesPage = () => {
     });
   };
 
-  const columns = [
+  const columns: any[] = [
     { key: 'invoiceNumber', header: 'Invoice #', sortable: true },
     { key: 'vendorName', header: 'Vendor', sortable: true },
     { 
       key: 'totalAmount', 
       header: 'Amount',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: any, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
     { key: 'approvedDate', header: 'Approved Date', sortable: true },
     { key: 'dueDate', header: 'Due Date', sortable: true },
@@ -54,8 +55,8 @@ const ApprovedInvoicesPage = () => {
             <DataTable
               data={approvedInvoices}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

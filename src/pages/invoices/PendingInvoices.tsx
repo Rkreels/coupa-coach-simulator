@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,17 +31,19 @@ const PendingInvoicesPage = () => {
     });
   };
 
-  const columns = [
-    { key: 'invoiceNumber' as const, header: 'Invoice #', sortable: true },
-    { key: 'vendorName' as const, header: 'Vendor', sortable: true },
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const columns: any[] = [
+    { key: 'invoiceNumber', header: 'Invoice #', sortable: true },
+    { key: 'vendorName', header: 'Vendor', sortable: true },
     { 
-      key: 'totalAmount' as const, 
+      key: 'totalAmount', 
       header: 'Amount',
       render: (value: number, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
-    { key: 'invoiceDate' as const, header: 'Invoice Date', sortable: true },
-    { key: 'dueDate' as const, header: 'Due Date', sortable: true },
-    { key: 'department' as const, header: 'Department', sortable: true }
+    { key: 'invoiceDate', header: 'Invoice Date', sortable: true },
+    { key: 'dueDate', header: 'Due Date', sortable: true },
+    { key: 'department', header: 'Department', sortable: true }
   ];
 
   return (
@@ -63,8 +65,8 @@ const PendingInvoicesPage = () => {
             <DataTable
               data={pendingInvoices}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

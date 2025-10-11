@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,16 +9,17 @@ import { useInvoices } from '../../hooks/useInvoices';
 import { Eye, Edit, AlertTriangle, MessageSquare } from 'lucide-react';
 
 const DisputedInvoicesPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
   const { invoices } = useInvoices();
   const disputedInvoices = invoices.filter(invoice => invoice.status === 'disputed');
 
-  const columns = [
+  const columns: any[] = [
     { key: 'invoiceNumber', header: 'Invoice #', sortable: true },
     { key: 'vendorName', header: 'Vendor', sortable: true },
-    { 
+{ 
       key: 'totalAmount', 
       header: 'Amount',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: any, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
     { key: 'invoiceDate', header: 'Invoice Date', sortable: true },
     { key: 'dueDate', header: 'Due Date', sortable: true },
@@ -44,8 +45,8 @@ const DisputedInvoicesPage = () => {
             <DataTable
               data={disputedInvoices}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

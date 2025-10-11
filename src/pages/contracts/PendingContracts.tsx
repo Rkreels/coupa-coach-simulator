@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Clock, CheckCircle, XCircle, Eye, FileText, Edit } from 'lucide-react';
 
 const PendingContractsPage = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
   const { contracts, updateContract } = useContracts();
   const pendingContracts = contracts.filter(contract => contract.status === 'pending');
 
@@ -45,12 +46,12 @@ const PendingContractsPage = () => {
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const columns = [
+  const columns: any[] = [
     { key: 'title', header: 'Contract Title', sortable: true },
     {
       key: 'type',
       header: 'Type',
-      render: (value, item) => (
+      render: (value: any, item: any) => (
         <Badge className={getTypeColor(item.type)}>
           {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
         </Badge>
@@ -60,7 +61,7 @@ const PendingContractsPage = () => {
     { 
       key: 'value', 
       header: 'Value',
-      render: (value, item) => `${item.currency} ${value.toLocaleString()}`
+      render: (value: any, item: any) => `${item.currency} ${value.toLocaleString()}`
     },
     { key: 'owner', header: 'Contract Owner', sortable: true },
     { key: 'createdDate', header: 'Created Date', sortable: true },
@@ -86,8 +87,8 @@ const PendingContractsPage = () => {
             <DataTable
               data={pendingContracts}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">

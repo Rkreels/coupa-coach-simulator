@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplicationLayout } from '../../components/ApplicationLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
@@ -11,6 +11,7 @@ import { Send, Eye, Download } from 'lucide-react';
 
 const ApprovedOrdersPage = () => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
   const { purchaseOrders, sendPurchaseOrder } = usePurchaseOrders();
   const approvedOrders = purchaseOrders.filter(order => order.status === 'approved');
 
@@ -53,8 +54,8 @@ const ApprovedOrdersPage = () => {
             <DataTable
               data={approvedOrders}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm">
