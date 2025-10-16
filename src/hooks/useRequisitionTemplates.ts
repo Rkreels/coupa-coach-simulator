@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface RequisitionTemplate {
   id: string;
@@ -54,7 +53,7 @@ const initialTemplates: RequisitionTemplate[] = [
 ];
 
 export const useRequisitionTemplates = () => {
-  const [templates, setTemplates] = useLocalStorage('requisitionTemplates', initialTemplates);
+  const [templates, setTemplates] = useState(initialTemplates);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 

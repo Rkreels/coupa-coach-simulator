@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface ApprovalStep {
   id: string;
@@ -84,7 +83,7 @@ const initialWorkflows: ApprovalWorkflow[] = [
 
 export const useApprovalWorkflow = () => {
   const { user } = useAuth();
-  const [workflows, setWorkflows] = useLocalStorage('approvalWorkflows', initialWorkflows);
+  const [workflows, setWorkflows] = useState(initialWorkflows);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ApprovalWorkflow | null>(null);
 
   const getWorkflowsForApprover = useCallback(() => {

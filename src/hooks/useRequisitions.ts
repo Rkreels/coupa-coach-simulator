@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface Requisition {
   id: string;
@@ -104,7 +103,7 @@ const initialRequisitions: Requisition[] = [
 ];
 
 export const useRequisitions = () => {
-  const [requisitions, setRequisitions] = useLocalStorage('requisitions', initialRequisitions);
+  const [requisitions, setRequisitions] = useState(initialRequisitions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');

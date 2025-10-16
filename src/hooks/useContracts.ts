@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface Contract {
   id: string;
@@ -112,7 +111,7 @@ const initialContracts: Contract[] = [
 ];
 
 export const useContracts = () => {
-  const [contracts, setContracts] = useLocalStorage('contracts', initialContracts);
+  const [contracts, setContracts] = useState(initialContracts);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');

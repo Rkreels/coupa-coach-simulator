@@ -1,6 +1,5 @@
 
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface DataManagerConfig<T> {
   storageKey: string;
@@ -13,7 +12,7 @@ export function useDataManager<T extends { id: string }>({
   initialData,
   searchFields
 }: DataManagerConfig<T>) {
-  const [data, setData] = useLocalStorage(storageKey, initialData);
+  const [data, setData] = useState(initialData);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [sortConfig, setSortConfig] = useState<{

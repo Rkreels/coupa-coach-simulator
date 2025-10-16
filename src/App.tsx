@@ -63,9 +63,9 @@ function App() {
                     <ContractsPage />
                   </ProtectedRoute>
                 } />
-                <Route path="/inventory" element={<InventoryPage />} />
-                <Route path="/spend-guard" element={<SpendGuardPage />} />
-                <Route path="/supply-chain" element={<SupplyChainPage />} />
+                <Route path="/inventory/*" element={<InventoryPage />} />
+                <Route path="/spend-guard/*" element={<SpendGuardPage />} />
+                <Route path="/supply-chain/*" element={<SupplyChainPage />} />
         <Route path="/setup/*" element={
           <ProtectedRoute requiredRole="System Administrator">
             <Routes>

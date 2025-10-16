@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 // Mock data structure for enterprise invoices
 const initialInvoices = [
@@ -130,7 +129,7 @@ const initialInvoices = [
 ];
 
 export const useEnterpriseInvoices = () => {
-  const [invoices, setInvoices] = useLocalStorage('enterprise-invoices', initialInvoices);
+  const [invoices, setInvoices] = useState(initialInvoices);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [supplierFilter, setSupplierFilter] = useState<string>('all');

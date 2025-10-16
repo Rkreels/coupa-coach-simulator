@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface Invoice {
   id: string;
@@ -210,7 +209,7 @@ const initialInvoices: Invoice[] = [
 ];
 
 export const useInvoices = () => {
-  const [invoices, setInvoices] = useLocalStorage('invoices', initialInvoices);
+  const [invoices, setInvoices] = useState(initialInvoices);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');

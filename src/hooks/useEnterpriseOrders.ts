@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 import { EnterprisePurchaseOrder, PurchaseOrderStatus, User, Supplier, AuditEntry } from '../types/coupa-entities';
 
 export interface EnterpriseOrder extends EnterprisePurchaseOrder {}
@@ -312,7 +311,7 @@ const initialOrders: EnterpriseOrder[] = [
 ];
 
 export const useEnterpriseOrders = () => {
-  const [orders, setOrders] = useLocalStorage('enterprise-orders', initialOrders);
+  const [orders, setOrders] = useState(initialOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [supplierFilter, setSupplierFilter] = useState<string>('all');

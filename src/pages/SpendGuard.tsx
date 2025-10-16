@@ -2,6 +2,14 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SpendGuardNavigation } from '../components/navigation/SpendGuardNavigation';
 import ActiveAlertsPage from './spend-guard/ActiveAlerts';
+import FraudDetectionPage from './spend-guard/FraudDetection';
+import DuplicateInvoicesPage from './spend-guard/DuplicateInvoices';
+import PriceVariancePage from './spend-guard/PriceVariance';
+import ApprovalBypassPage from './spend-guard/ApprovalBypass';
+import SupplierRiskPage from './spend-guard/SupplierRisk';
+import PolicyViolationsPage from './spend-guard/PolicyViolations';
+import AnalyticsPage from './spend-guard/Analytics';
+import SettingsPage from './spend-guard/Settings';
 import { ApplicationLayout } from '../components/ApplicationLayout';
 import { VoiceElement } from '../components/VoiceElement';
 import { Button } from '@/components/ui/button';
@@ -86,6 +94,14 @@ const SpendGuard = () => {
       <Routes>
         <Route path="/" element={<SpendGuardDashboard />} />
         <Route path="/active-alerts" element={<ActiveAlertsPage />} />
+        <Route path="/fraud-detection" element={<FraudDetectionPage />} />
+        <Route path="/duplicate-invoices" element={<DuplicateInvoicesPage />} />
+        <Route path="/price-variance" element={<PriceVariancePage />} />
+        <Route path="/approval-bypass" element={<ApprovalBypassPage />} />
+        <Route path="/supplier-risk" element={<SupplierRiskPage />} />
+        <Route path="/policy-violations" element={<PolicyViolationsPage />} />
+        <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </div>
   );

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface PurchaseOrder {
   id: string;
@@ -166,7 +165,7 @@ const initialPurchaseOrders: PurchaseOrder[] = [
 ];
 
 export function usePurchaseOrders() {
-  const [purchaseOrders, setPurchaseOrders] = useLocalStorage('purchaseOrders', initialPurchaseOrders);
+  const [purchaseOrders, setPurchaseOrders] = useState(initialPurchaseOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');

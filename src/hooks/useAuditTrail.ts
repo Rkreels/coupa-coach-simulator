@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface AuditEntry {
   id: string;
@@ -103,7 +102,7 @@ const initialAuditLog: AuditEntry[] = [
 ];
 
 export const useAuditTrail = () => {
-  const [auditLog, setAuditLog] = useLocalStorage('auditTrail', initialAuditLog);
+  const [auditLog, setAuditLog] = useState(initialAuditLog);
   const [filters, setFilters] = useState<AuditFilters>({});
 
   const logActivity = (

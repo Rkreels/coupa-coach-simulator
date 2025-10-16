@@ -119,15 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      setUser(userData);
-      setIsAuthenticated(true);
-    }
-  }, []);
+  // Removed localStorage persistence to prevent memory issues on low-memory devices
 
   const login = async (username: string, password: string): Promise<boolean> => {
     // Simple mock authentication
@@ -141,7 +133,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setUser(userWithLogin);
       setIsAuthenticated(true);
-      localStorage.setItem('currentUser', JSON.stringify(userWithLogin));
       return true;
     }
     
@@ -151,7 +142,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('currentUser');
   };
 
   const hasPermission = (permission: string): boolean => {
@@ -173,7 +163,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lastLogin: new Date().toISOString()
       };
       setUser(userWithLogin);
-      localStorage.setItem('currentUser', JSON.stringify(userWithLogin));
     }
   };
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface EnterpriseSupplier {
   id: string;
@@ -174,7 +173,7 @@ const initialSuppliers: EnterpriseSupplier[] = [
 ];
 
 export const useEnterpriseSuppliers = () => {
-  const [suppliers, setSuppliers] = useLocalStorage('enterpriseSuppliers', initialSuppliers);
+  const [suppliers, setSuppliers] = useState(initialSuppliers);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
