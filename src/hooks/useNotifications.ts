@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 export interface NotificationData {
   id: string;
@@ -19,57 +18,22 @@ export interface NotificationData {
 }
 
 const initialNotifications: NotificationData[] = [
-  {
-    id: 'notif-001',
-    type: 'approval_request',
-    title: 'Invoice Approval Required',
-    message: 'Invoice INV-2023-001 from Staples Inc. requires your approval. Amount: $1,250.00',
-    timestamp: '2024-01-26T10:30:00Z',
-    isRead: false,
-    priority: 'high',
-    actionUrl: '/invoices/INV-2023-001',
-    entityType: 'Invoice',
-    entityId: 'INV-2023-001',
-    userId: 'current-user',
-    department: 'Finance',
-    metadata: { amount: 1250, vendor: 'Staples Inc.' }
-  },
-  {
-    id: 'notif-002',
-    type: 'system_alert',
-    title: 'Budget Threshold Exceeded',
-    message: 'IT Department has exceeded 85% of quarterly budget. Current usage: $42,500 of $50,000',
-    timestamp: '2024-01-26T09:15:00Z',
-    isRead: false,
-    priority: 'urgent',
-    actionUrl: '/analytics/budgets',
-    entityType: 'Budget',
-    entityId: 'BUDGET-IT-Q1-2024',
-    userId: 'current-user',
-    department: 'IT',
-    metadata: { currentSpend: 42500, budgetLimit: 50000, percentage: 85 }
-  },
-  {
-    id: 'notif-003',
-    type: 'success',
-    title: 'Purchase Order Approved',
-    message: 'Your purchase order PO-2023-045 for IT equipment has been approved by Jane Smith.',
-    timestamp: '2024-01-26T08:45:00Z',
-    isRead: true,
-    priority: 'medium',
-    actionUrl: '/orders/PO-2023-045',
-    entityType: 'PurchaseOrder',
-    entityId: 'PO-2023-045',
-    userId: 'current-user',
-    department: 'IT',
-    metadata: { approver: 'Jane Smith', amount: 15000 }
-  }
+  { id: 'notif-001', type: 'approval_request', title: 'Invoice Approval Required', message: 'Invoice INV-2024-001 from Staples Inc. requires your approval. Amount: $1,250.00', timestamp: '2024-01-26T10:30:00Z', isRead: false, priority: 'high', actionUrl: '/invoices', entityType: 'Invoice', entityId: 'INV-2024-001', userId: 'current-user', department: 'Finance' },
+  { id: 'notif-002', type: 'system_alert', title: 'Budget Threshold Exceeded', message: 'IT Department has exceeded 85% of quarterly budget.', timestamp: '2024-01-26T09:15:00Z', isRead: false, priority: 'urgent', actionUrl: '/analytics', entityType: 'Budget', entityId: 'BUD-IT-Q1', userId: 'current-user', department: 'IT' },
+  { id: 'notif-003', type: 'success', title: 'Purchase Order Approved', message: 'Your purchase order PO-2024-002 has been approved by Jane Smith.', timestamp: '2024-01-26T08:45:00Z', isRead: true, priority: 'medium', actionUrl: '/orders', entityType: 'PurchaseOrder', entityId: 'PO-2024-002', userId: 'current-user', department: 'IT' },
+  { id: 'notif-004', type: 'warning', title: 'Contract Expiring Soon', message: 'Contract CNT-2024-003 with CleanCorp expires in 15 days.', timestamp: '2024-01-25T16:00:00Z', isRead: false, priority: 'high', actionUrl: '/contracts', entityType: 'Contract', entityId: 'CNT-2024-003', userId: 'current-user', department: 'Facilities' },
+  { id: 'notif-005', type: 'info', title: 'New Supplier Registered', message: 'MedEquip Solutions has submitted a supplier registration request.', timestamp: '2024-01-25T14:30:00Z', isRead: true, priority: 'low', actionUrl: '/suppliers', entityType: 'Supplier', entityId: 'SUP-NEW-001', userId: 'current-user', department: 'Procurement' },
+  { id: 'notif-006', type: 'approval_request', title: 'Requisition Pending Approval', message: 'REQ-2024-005 for $8,500 marketing materials needs your review.', timestamp: '2024-01-25T11:00:00Z', isRead: false, priority: 'high', actionUrl: '/requisitions', entityType: 'Requisition', entityId: 'REQ-2024-005', userId: 'current-user', department: 'Marketing' },
+  { id: 'notif-007', type: 'error', title: 'Payment Failed', message: 'Payment for invoice INV-2024-003 failed. Please update payment method.', timestamp: '2024-01-25T09:00:00Z', isRead: false, priority: 'urgent', actionUrl: '/invoices', entityType: 'Invoice', entityId: 'INV-2024-003', userId: 'current-user', department: 'Finance' },
+  { id: 'notif-008', type: 'success', title: 'Supplier Onboarded', message: 'TechCorp Solutions has completed onboarding and is now active.', timestamp: '2024-01-24T15:30:00Z', isRead: true, priority: 'medium', actionUrl: '/suppliers', entityType: 'Supplier', entityId: 'SUP-002', userId: 'current-user', department: 'Procurement' },
+  { id: 'notif-009', type: 'info', title: 'Inventory Low Stock Alert', message: 'Printer toner cartridges are below reorder point (5 remaining).', timestamp: '2024-01-24T10:00:00Z', isRead: true, priority: 'medium', actionUrl: '/inventory', entityType: 'Inventory', entityId: 'INV-ITEM-042', userId: 'current-user', department: 'Operations' },
+  { id: 'notif-010', type: 'warning', title: 'Delivery Delayed', message: 'PO-2024-004 delivery delayed by 3 business days from CleanCorp.', timestamp: '2024-01-24T08:00:00Z', isRead: false, priority: 'high', actionUrl: '/orders', entityType: 'PurchaseOrder', entityId: 'PO-2024-004', userId: 'current-user', department: 'Facilities' }
 ];
 
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useLocalStorage('notifications', initialNotifications);
+  const [notifications, setNotifications] = useState(initialNotifications);
   const [realTimeEnabled, setRealTimeEnabled] = useState(true);
-  const [preferences, setPreferences] = useLocalStorage('notificationPreferences', {
+  const [preferences, setPreferences] = useState({
     email: true,
     browser: true,
     mobile: false,
