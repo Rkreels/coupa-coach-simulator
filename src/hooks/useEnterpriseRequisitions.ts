@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 import { EnterpriseRequisition, RequisitionStatus, RequisitionLineItem, User, Department, CostCenter, Budget, ApprovalStep, AuditEntry } from '../types/coupa-entities';
 
 // Mock data for comprehensive enterprise requisitions
@@ -575,7 +574,7 @@ const initialRequisitions: EnterpriseRequisition[] = [
 ];
 
 export const useEnterpriseRequisitions = () => {
-  const [requisitions, setRequisitions] = useLocalStorage('enterpriseRequisitions', initialRequisitions);
+  const [requisitions, setRequisitions] = useState(initialRequisitions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');

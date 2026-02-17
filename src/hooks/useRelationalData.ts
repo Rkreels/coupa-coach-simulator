@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 // Define relationship types
 export interface DataRelationship {
@@ -97,7 +96,7 @@ const initialRelationships: DataRelationship[] = [
 ];
 
 export const useRelationalData = () => {
-  const [relationships, setRelationships] = useLocalStorage('dataRelationships', initialRelationships);
+  const [relationships, setRelationships] = useState(initialRelationships);
   const [linkingMode, setLinkingMode] = useState(false);
   const [selectedEntity, setSelectedEntity] = useState<{
     type: string;

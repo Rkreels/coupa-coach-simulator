@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 import { EnterprisePurchaseOrder, PurchaseOrderStatus, PurchaseOrderLineItem, User, Supplier, ChangeOrder, Receipt, AuditEntry } from '../types/coupa-entities';
 
 // Mock data for comprehensive enterprise purchase orders
@@ -646,7 +645,7 @@ const initialPurchaseOrders: EnterprisePurchaseOrder[] = [
 ];
 
 export const useEnterprisePurchaseOrders = () => {
-  const [purchaseOrders, setPurchaseOrders] = useLocalStorage('enterprisePurchaseOrders', initialPurchaseOrders);
+  const [purchaseOrders, setPurchaseOrders] = useState(initialPurchaseOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [supplierFilter, setSupplierFilter] = useState<string>('all');

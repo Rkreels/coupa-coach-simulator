@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { useRequisitions } from '../../hooks/useRequisitions';
-import { FileText, Edit, Eye } from 'lucide-react';
+import { FileText, Edit, Eye, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const MyRequisitionsPage = () => {
-  const { allRequisitions } = useRequisitions();
-  const myRequisitions = allRequisitions.filter(req => req.requestor === 'Current User' || req.requestor === 'Sarah Johnson');
+  const { allRequisitions, searchTerm, setSearchTerm, deleteRequisition } = useRequisitions();
+  const myRequisitions = allRequisitions; // Show all requisitions in demo mode
 
   const getStatusBadge = (status: string) => {
     const colors = {
@@ -71,18 +73,29 @@ const MyRequisitionsPage = () => {
             <DataTable
               data={myRequisitions}
               columns={columns}
-              searchTerm=""
-              onSearchChange={() => {}}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
               actions={(item) => (
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" title="View">
                     <Eye className="h-4 w-4" />
                   </Button>
                   {(item.status === 'draft' || item.status === 'rejected') && (
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" title="Edit">
                       <Edit className="h-4 w-4" />
                     </Button>
                   )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600"
+                    title="Delete"
+                    onClick={() => {
+                      deleteRequisition(item.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
             />

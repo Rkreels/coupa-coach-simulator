@@ -6,7 +6,10 @@ import { RequisitionsModule } from '../components/modules/RequisitionsModule';
 import CreateRequisitionPage from './requisitions/CreateRequisition';
 import MyRequisitionsPage from './requisitions/MyRequisitions';
 import TemplatesPage from './requisitions/Templates';
-import { ModulePage } from '../components/ModulePage';
+import PendingApprovalPage from './requisitions/PendingApproval';
+import ApprovedRequisitionsPage from './requisitions/ApprovedRequisitions';
+import ShoppingCatalogPage from './requisitions/ShoppingCatalog';
+import QuickOrderEntryPage from './requisitions/QuickOrderEntry';
 
 const RequisitionsPage = () => {
   return (
@@ -16,11 +19,11 @@ const RequisitionsPage = () => {
         <Route path="/" element={<RequisitionsModule />} />
         <Route path="/create" element={<CreateRequisitionPage />} />
         <Route path="/my" element={<MyRequisitionsPage />} />
-        <Route path="/pending" element={<ModulePage moduleName="Requisitions" pageTitle="Pending Approval" />} />
-        <Route path="/approved" element={<ModulePage moduleName="Requisitions" pageTitle="Approved Requisitions" />} />
+        <Route path="/pending" element={<PendingApprovalPage />} />
+        <Route path="/approved" element={<ApprovedRequisitionsPage />} />
         <Route path="/templates" element={<TemplatesPage />} />
-        <Route path="/shopping" element={<ModulePage moduleName="Requisitions" pageTitle="Shopping Catalogs" />} />
-        <Route path="/quick-order" element={<ModulePage moduleName="Requisitions" pageTitle="Quick Order Entry" />} />
+        <Route path="/shopping" element={<ShoppingCatalogPage />} />
+        <Route path="/quick-order" element={<QuickOrderEntryPage />} />
       </Routes>
     </div>
   );
