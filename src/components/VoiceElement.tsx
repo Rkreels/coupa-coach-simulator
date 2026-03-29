@@ -34,7 +34,7 @@ export const VoiceElement: React.FC<VoiceElementProps> = ({
 
   const { playScript, detailLevel, enabled } = voiceTutorialContext;
   const [isHovering, setIsHovering] = useState(false);
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const elementRef = useRef<HTMLDivElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
 
