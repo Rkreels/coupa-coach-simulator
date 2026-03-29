@@ -26,31 +26,66 @@ export interface TemplateLineItem {
   specifications?: string;
 }
 
-const initialTemplates: RequisitionTemplate[] = [
-  {
-    id: 'TPL-001',
-    name: 'Office Supplies Basic',
-    description: 'Standard office supplies template',
-    category: 'Office Supplies',
-    department: 'All',
-    isDefault: true,
-    usageCount: 45,
-    lastUsed: '2024-01-15',
-    createdBy: 'System',
-    createdDate: '2024-01-01',
+const templateSeeds = [
+  ['Office Supplies Basic', 'Standard office supplies template', 'Office Supplies', 'All', 'Office Depot'],
+  ['IT Laptop Refresh', 'New-hire laptop and docking station package', 'IT Equipment', 'IT', 'Dell Technologies'],
+  ['Marketing Event Kit', 'Trade show booth and branded collateral pack', 'Marketing', 'Marketing', 'VistaPrint'],
+  ['Facilities Safety Stock', 'Recurring safety and PPE replenishment', 'Safety', 'Facilities', 'Grainger'],
+  ['Finance Workstation Upgrade', 'Dual-monitor setup for finance analysts', 'IT Equipment', 'Finance', 'CDW'],
+  ['HR Onboarding Bundle', 'Starter equipment and welcome materials', 'HR', 'Human Resources', 'Staples'],
+  ['Engineering Lab Consumables', 'Monthly lab parts and accessories', 'Engineering', 'Engineering', 'RS Components'],
+  ['Travel Essentials', 'Pre-approved travel accessories and kits', 'Travel', 'Operations', 'Amazon Business'],
+  ['Warehouse Barcode Pack', 'Scanners, labels, and printer supplies', 'Operations', 'Warehouse', 'Zebra'],
+  ['Executive Board Meeting', 'Catering, printouts, and meeting support', 'Corporate Services', 'Executive', 'Aramark'],
+  ['Legal NDA Starter', 'Standard legal intake and filing pack', 'Legal', 'Legal', 'Iron Mountain'],
+  ['Customer Success Welcome Kit', 'Gifts and onboarding material for premium accounts', 'Customer Success', 'Sales', '4imprint'],
+  ['Remote Work Starter', 'Monitor, webcam, keyboard, and headset', 'IT Equipment', 'All', 'Logitech'],
+  ['Data Center Maintenance', 'Quarterly maintenance spare parts', 'Infrastructure', 'IT', 'Cisco'],
+  ['Training Workshop Pack', 'Facilitator and training room materials', 'Learning & Development', 'Human Resources', 'Office Depot'],
+  ['Procurement Audit Support', 'Binders, labels, and audit stationery', 'Procurement', 'Procurement', 'Staples'],
+  ['Sustainability Reporting', 'External consulting and reporting templates', 'Consulting', 'ESG', 'Deloitte'],
+  ['Branch Office Launch', 'Desks, chairs, and starter equipment', 'Facilities', 'Operations', 'IKEA Business'],
+  ['Field Service Toolkit', 'Mobile tools and consumables', 'Field Operations', 'Operations', 'Fastenal'],
+  ['Quarter End Close Pack', 'Temporary licenses and support materials', 'Finance', 'Finance', 'Microsoft']
+] as const;
+
+const initialTemplates: RequisitionTemplate[] = templateSeeds.map((seed, index) => {
+  const [name, description, category, department, supplier] = seed;
+  const itemBasePrice = 25 + index * 18;
+
+  return {
+    id: `TPL-${String(index + 1).padStart(3, '0')}`,
+    name,
+    description,
+    category,
+    department,
+    isDefault: index < 4,
+    usageCount: 8 + index * 3,
+    lastUsed: `2024-02-${String((index % 20) + 1).padStart(2, '0')}`,
+    createdBy: index % 3 === 0 ? 'System' : 'Current User',
+    createdDate: `2024-01-${String((index % 20) + 1).padStart(2, '0')}`,
     lineItems: [
       {
-        id: 'TLI-001',
-        description: 'Printer Paper A4',
-        category: 'Paper Products',
-        estimatedPrice: 25.00,
-        preferredSupplier: 'Office Depot'
+        id: `TLI-${String(index + 1).padStart(3, '0')}-1`,
+        description: `${name} - Primary line item`,
+        category,
+        estimatedPrice: itemBasePrice,
+        preferredSupplier: supplier,
+        specifications: 'Standard enterprise approved specification'
+      },
+      {
+        id: `TLI-${String(index + 1).padStart(3, '0')}-2`,
+        description: `${name} - Secondary line item`,
+        category,
+        estimatedPrice: itemBasePrice * 1.4,
+        preferredSupplier: supplier,
+        specifications: 'Includes standard delivery and support'
       }
     ],
-    estimatedTotal: 250.00,
+    estimatedTotal: Number((itemBasePrice * 2.4).toFixed(2)),
     currency: 'USD'
-  }
-];
+  };
+});
 
 export const useRequisitionTemplates = () => {
   const [templates, setTemplates] = useState(initialTemplates);

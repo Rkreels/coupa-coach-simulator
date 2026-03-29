@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface FormField {
   name: string;
@@ -51,14 +52,15 @@ export function FormDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Review the fields below and save your changes.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {fields.map((field) => (
-              <div key={field.name} className="space-y-2">
+              <div key={field.name} className={`space-y-2 ${field.type === 'textarea' ? 'md:col-span-2' : ''}`}>
                 <Label htmlFor={field.name}>
                   {field.label}
-                  {field.required && <span className="text-red-500">*</span>}
+                  {field.required && <span className="text-destructive">*</span>}
                 </Label>
                 
                 {field.type === 'select' ? (
@@ -67,7 +69,7 @@ export function FormDialog({
                     value={values[field.name] || ''}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     required={field.required}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     <option value="">Select {field.label}</option>
                     {field.options?.map((option) => (
@@ -77,13 +79,12 @@ export function FormDialog({
                     ))}
                   </select>
                 ) : field.type === 'textarea' ? (
-                  <textarea
+                  <Textarea
                     id={field.name}
                     value={values[field.name] || ''}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     required={field.required}
                     placeholder={field.placeholder}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={3}
                   />
                 ) : (
@@ -100,7 +101,7 @@ export function FormDialog({
             ))}
           </div>
           
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex flex-col-reverse justify-end gap-2 pt-4 sm:flex-row">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
