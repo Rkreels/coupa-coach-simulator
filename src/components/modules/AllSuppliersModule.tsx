@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FormDialog } from '@/components/ui/form-dialog';
+import { DetailViewDialog } from '@/components/ui/detail-view-dialog';
 import { ImportExport } from '@/components/ui/import-export';
 import { useSuppliers, Supplier } from '../../hooks/useSuppliers';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,8 @@ export const AllSuppliersModule = () => {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 
   const {
@@ -162,6 +165,11 @@ export const AllSuppliersModule = () => {
     }
   };
 
+  const handleViewSupplier = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setViewOpen(true);
+  };
+
   const handleSubmit = () => {
     const supplierData = {
       name: formValues.name || '',
@@ -233,7 +241,7 @@ export const AllSuppliersModule = () => {
 
   const renderActions = (supplier: Supplier) => (
     <div className="flex gap-1">
-      <Button variant="outline" size="sm">
+      <Button variant="outline" size="sm" onClick={() => handleViewSupplier(supplier)}>
         <Eye className="h-4 w-4 mr-1" />
         View
       </Button>
@@ -252,6 +260,41 @@ export const AllSuppliersModule = () => {
       </Button>
     </div>
   );
+
+  const viewSections = selectedSupplier ? [
+    {
+      title: 'Supplier Overview',
+      fields: [
+        { label: 'Supplier ID', value: selectedSupplier.id },
+        { label: 'Supplier Code', value: selectedSupplier.code },
+        { label: 'Status', value: selectedSupplier.status, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' },
+        { label: 'Category', value: selectedSupplier.category },
+        { label: 'Contact Person', value: selectedSupplier.contactPerson },
+        { label: 'Email', value: selectedSupplier.email },
+        { label: 'Phone', value: selectedSupplier.phone },
+        { label: 'Payment Terms', value: selectedSupplier.paymentTerms }
+      ]
+    },
+    {
+      title: 'Financial & Performance',
+      fields: [
+        { label: 'Credit Limit', value: `${selectedSupplier.currency} ${selectedSupplier.creditLimit.toLocaleString()}` },
+        { label: 'Total Spend', value: `${selectedSupplier.currency} ${selectedSupplier.performance.totalSpend.toLocaleString()}` },
+        { label: 'Total Orders', value: selectedSupplier.performance.totalOrders },
+        { label: 'Rating', value: `${selectedSupplier.performance.rating}/5` },
+        { label: 'On-Time Delivery', value: `${selectedSupplier.performance.onTimeDelivery}%` },
+        { label: 'Quality Score', value: `${selectedSupplier.performance.qualityScore}%` }
+      ]
+    },
+    {
+      title: 'Address & Notes',
+      fields: [
+        { label: 'Address', value: `${selectedSupplier.address.street}, ${selectedSupplier.address.city}, ${selectedSupplier.address.state} ${selectedSupplier.address.zipCode}, ${selectedSupplier.address.country}`, span: 2 },
+        { label: 'Certifications', value: selectedSupplier.certifications, type: 'list' as const, span: 2 },
+        { label: 'Notes', value: selectedSupplier.notes, span: 2 }
+      ]
+    }
+  ] : [];
 
   return (
     <ApplicationLayout pageTitle="Suppliers Management">
@@ -339,6 +382,7 @@ export const AllSuppliersModule = () => {
               columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
+              onRowClick={handleViewSupplier}
               actions={renderActions}
             />
           </CardContent>
@@ -353,6 +397,14 @@ export const AllSuppliersModule = () => {
           onValuesChange={setFormValues}
           onSubmit={handleSubmit}
           submitText={editingSupplier ? 'Update' : 'Create'}
+        />
+
+        <DetailViewDialog
+          open={viewOpen}
+          onOpenChange={setViewOpen}
+          title={selectedSupplier?.name || ''}
+          subtitle={selectedSupplier?.id}
+          sections={viewSections}
         />
       </div>
     </ApplicationLayout>

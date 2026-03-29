@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FormDialog } from '@/components/ui/form-dialog';
+import { DetailViewDialog } from '@/components/ui/detail-view-dialog';
 import { ImportExport } from '@/components/ui/import-export';
 import { useInvoices, Invoice } from '../../hooks/useInvoices';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,8 @@ export const AllInvoicesModule = () => {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 
   const {
@@ -168,6 +171,11 @@ export const AllInvoicesModule = () => {
     });
   };
 
+  const handleViewInvoice = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setViewOpen(true);
+  };
+
   const handleSubmit = () => {
     const invoiceData = {
       invoiceNumber: formValues.invoiceNumber || '',
@@ -240,7 +248,7 @@ export const AllInvoicesModule = () => {
 
   const renderActions = (invoice: Invoice) => (
     <div className="flex gap-1">
-      <Button variant="outline" size="sm">
+      <Button variant="outline" size="sm" onClick={() => handleViewInvoice(invoice)}>
         <Eye className="h-4 w-4 mr-1" />
         View
       </Button>
@@ -292,6 +300,38 @@ export const AllInvoicesModule = () => {
       </Button>
     </div>
   );
+
+  const viewSections = selectedInvoice ? [
+    {
+      title: 'Invoice Overview',
+      fields: [
+        { label: 'Invoice Number', value: selectedInvoice.invoiceNumber },
+        { label: 'Vendor', value: selectedInvoice.vendorName },
+        { label: 'Vendor ID', value: selectedInvoice.vendorId },
+        { label: 'Department', value: selectedInvoice.department },
+        { label: 'Status', value: selectedInvoice.status, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' },
+        { label: 'Priority', value: selectedInvoice.priority, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' }
+      ]
+    },
+    {
+      title: 'Financial Details',
+      fields: [
+        { label: 'Total Amount', value: `${selectedInvoice.currency} ${selectedInvoice.totalAmount.toLocaleString()}` },
+        { label: 'Tax Amount', value: `${selectedInvoice.currency} ${selectedInvoice.taxAmount.toLocaleString()}` },
+        { label: 'Net Amount', value: `${selectedInvoice.currency} ${selectedInvoice.netAmount.toLocaleString()}` },
+        { label: 'Purchase Order ID', value: selectedInvoice.purchaseOrderId },
+        { label: 'Invoice Date', value: selectedInvoice.invoiceDate },
+        { label: 'Due Date', value: selectedInvoice.dueDate }
+      ]
+    },
+    {
+      title: 'Supporting Information',
+      fields: [
+        { label: 'Description', value: selectedInvoice.description, span: 2 },
+        { label: 'Notes', value: selectedInvoice.notes, span: 2 }
+      ]
+    }
+  ] : [];
 
   return (
     <ApplicationLayout pageTitle="Invoices Management">
@@ -372,6 +412,7 @@ export const AllInvoicesModule = () => {
               columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
+              onRowClick={handleViewInvoice}
               actions={renderActions}
             />
           </CardContent>
@@ -386,6 +427,14 @@ export const AllInvoicesModule = () => {
           onValuesChange={setFormValues}
           onSubmit={handleSubmit}
           submitText={editingInvoice ? 'Update' : 'Create'}
+        />
+
+        <DetailViewDialog
+          open={viewOpen}
+          onOpenChange={setViewOpen}
+          title={selectedInvoice?.invoiceNumber || ''}
+          subtitle={selectedInvoice?.id}
+          sections={viewSections}
         />
       </div>
     </ApplicationLayout>

@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FormDialog } from '@/components/ui/form-dialog';
+import { DetailViewDialog } from '@/components/ui/detail-view-dialog';
 import { ImportExport } from '@/components/ui/import-export';
 import { useContracts, Contract } from '../../hooks/useContracts';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,8 @@ export const AllContractsModule = () => {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 
   const {
@@ -163,6 +166,11 @@ export const AllContractsModule = () => {
     }
   };
 
+  const handleViewContract = (contract: Contract) => {
+    setSelectedContract(contract);
+    setViewOpen(true);
+  };
+
   const handleSubmit = () => {
     const contractData = {
       title: formValues.title || '',
@@ -256,7 +264,7 @@ export const AllContractsModule = () => {
 
   const renderActions = (contract: Contract) => (
     <div className="flex gap-1">
-      <Button variant="outline" size="sm">
+      <Button variant="outline" size="sm" onClick={() => handleViewContract(contract)}>
         <Eye className="h-4 w-4 mr-1" />
         View
       </Button>
@@ -275,6 +283,41 @@ export const AllContractsModule = () => {
       </Button>
     </div>
   );
+
+  const viewSections = selectedContract ? [
+    {
+      title: 'Contract Overview',
+      fields: [
+        { label: 'Contract ID', value: selectedContract.id },
+        { label: 'Title', value: selectedContract.title, span: 2 },
+        { label: 'Status', value: selectedContract.status, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' },
+        { label: 'Type', value: selectedContract.type, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' },
+        { label: 'Supplier', value: selectedContract.supplier },
+        { label: 'Department', value: selectedContract.department },
+        { label: 'Owner', value: selectedContract.owner },
+        { label: 'Approver', value: selectedContract.approver }
+      ]
+    },
+    {
+      title: 'Commercial Terms',
+      fields: [
+        { label: 'Value', value: `${selectedContract.currency} ${selectedContract.value.toLocaleString()}` },
+        { label: 'Risk Level', value: selectedContract.riskLevel, type: 'badge' as const, badgeColor: 'bg-muted text-foreground' },
+        { label: 'Start Date', value: selectedContract.startDate },
+        { label: 'End Date', value: selectedContract.endDate },
+        { label: 'Renewal Date', value: selectedContract.renewalDate },
+        { label: 'Notification Days', value: selectedContract.notificationDays }
+      ]
+    },
+    {
+      title: 'Description & Terms',
+      fields: [
+        { label: 'Description', value: selectedContract.description, span: 2 },
+        { label: 'Terms', value: selectedContract.terms, type: 'list' as const, span: 2 },
+        { label: 'Notes', value: selectedContract.notes, span: 2 }
+      ]
+    }
+  ] : [];
 
   return (
     <ApplicationLayout pageTitle="Contracts Management">
@@ -362,6 +405,7 @@ export const AllContractsModule = () => {
               columns={columns}
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
+              onRowClick={handleViewContract}
               actions={renderActions}
             />
           </CardContent>
@@ -376,6 +420,14 @@ export const AllContractsModule = () => {
           onValuesChange={setFormValues}
           onSubmit={handleSubmit}
           submitText={editingContract ? 'Update' : 'Create'}
+        />
+
+        <DetailViewDialog
+          open={viewOpen}
+          onOpenChange={setViewOpen}
+          title={selectedContract?.title || ''}
+          subtitle={selectedContract?.id}
+          sections={viewSections}
         />
       </div>
     </ApplicationLayout>

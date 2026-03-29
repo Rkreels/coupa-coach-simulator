@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUpDown, Search, Filter } from 'lucide-react';
+import { ArrowUpDown, Search } from 'lucide-react';
 
 interface Column<T> {
   key: keyof T;
@@ -22,6 +22,7 @@ interface DataTableProps<T> {
   onRowClick?: (item: T) => void;
   actions?: (item: T) => React.ReactNode;
   loading?: boolean;
+  showSearch?: boolean;
 }
 
 export function DataTable<T>({
@@ -33,13 +34,14 @@ export function DataTable<T>({
   sortConfig,
   onRowClick,
   actions,
-  loading = false
+  loading = false,
+  showSearch = true
 }: DataTableProps<T>) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
+      {showSearch && (
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search..."
             value={searchTerm}
@@ -47,13 +49,10 @@ export function DataTable<T>({
             className="pl-10"
           />
         </div>
-        <Button variant="outline" size="sm">
-          <Filter className="h-4 w-4 mr-2" />
-          Filter
-        </Button>
-      </div>
+      )}
 
-      <div className="rounded-md border">
+      <div className="overflow-hidden rounded-md border">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -94,7 +93,7 @@ export function DataTable<T>({
               data.map((item, index) => (
                 <TableRow
                   key={index}
-                  className={onRowClick ? "cursor-pointer hover:bg-gray-50" : ""}
+                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
                   onClick={() => onRowClick?.(item)}
                 >
                   {columns.map((column) => (
@@ -114,6 +113,7 @@ export function DataTable<T>({
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
     </div>
   );
